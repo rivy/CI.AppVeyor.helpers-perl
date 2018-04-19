@@ -1,0 +1,66 @@
+<DOCTYPE markdown>
+<meta charset="utf-8" content="text/markdown" lang="en">
+
+# AppVeyor CI Helpers for Perl
+
+This repository contains a complete [AppVeyor CI](https://appveyor.com) configuration and associated helper scripts to simplify Windows-based testing of Perl distributions.
+
+## Rapid setup
+
+1. Add the supplied [".appveyor.yml"](https://github.com/rivy/AppVeyorCI.helpers-perl/blob/master/.appveyor.yml) file to the Perl distribution being tested.
+2. Create an AppVeyor project which observes the Perl distribution's repository.
+3. (Optionally) Configure the AppVeyor project:
+    1. Enable "General / Skip branches without appveyor.yml" within the AppVeyor project settings.
+    2. Within the AppVeyor project settings, add `CODECOV_TOKEN` and/or `COVERALLS_TOKEN` (from the observer projects of their respective sites) as encrypted environment variables.
+
+## The Details
+
+#### [".appveyor.yml"](https://github.com/rivy/AppVeyorCI.helpers-perl/blob/master/.appveyor.yml)
+
+".appveyor.yml" is a single file which, when added into a perl distribution, will add the ability to test and analyze the distribution using AppVeyor CI. The only distribution requirement is that the distribution be buildable and testable using the standard perl make or build idiom.
+
+The ".appveyor.yml" file can also serve as an example for building other AppVeyor configuration variations.
+
+##### ".appveyor.yml" configuration variables
+
+|||
+-|-|:-
+CI_HELPER_BRANCH    | "" => auto-set, valid alternates are [ "stable" (the default), "canary", BRANCH or TAG ]
+DEVEL_COVER_OPTIONS | "" => auto-set, value determined by DIST_TOOLING <br> " " is a neutral setting which will block auto-set
+DIST_EXTRA_DEPS     | additional required/requested dependencies for building and/or testing
+DIST_SUPPRESS_DEPS  | [ "" == `false`, otherwise `true` ] <br> `true` can be useful for CORE modules, suppressing testing for and installing of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS)
+DIST_TOOLING        | [ "build", "make" ] <br>"" => auto-set based on existence of "Build.PL" and/or "Makefile.PL"
+TEST_METHOD         | "" => auto-set to `prove -b` or `prove -l` based on DIST_TOOLING and "blib" directory
+
+These variables have intelligent defaults and can, in general, be left alone as "". They are usually only necessary for special circumstances.
+
+`CI_HELPER_BRANCH` can be used to select between frequent helper updates (eg, "canary"), more stable code (eg, "stable" [the default] or "master"), or invariant (using a release TAG). Generally, from most to least stable ... [ "vendoring" (see below) > TAG > stable >= master > canary > BRANCH ]. By definition, code updates and changes are applied in the inverse order of "stability".
+
+##### ".appveyor.yml" utility variables
+
+|||
+-|-
+CI_HELPERS      | path of directory containing "helper" scripts
+CI_TEMP_DIR     | working directory
+
+#### [".appveyor_bin"](https://github.com/rivy/AppVeyorCI.helpers-perl/tree/master/.appveyor_bin)
+
+The ".appveyor_bin" directory contains multiple helper scripts to streamline ".appveyor.yml" and to provide workarounds for various build issues (within both the AppVeyor and the Perl build/test processes).
+
+### Code coverage
+
+Code coverage can be enabled by adding the `CODECOV_TOKEN` and/or `COVERALLS_TOKEN` to the environment variables of the AppVeyor project, on the AppVeyor site. These tokens are obtained from their respective sites.
+
+Please note that these are secrets and should be treated as such. Neither of the token values should ever be included in the ".appveyor.yml" file or submitted into the distribution repository.
+
+### Optional distribution files
+
+#### ".appveyor_env.{BAT,PS1}"
+
+The files ".appveyor_env.BAT" and/or ".appveyor_env.PS1" (**which are not included in the repo**) can serve as distribution-specific overrides of the AppVeyor configuration, especially (but not limited to) overriding global environment variables.
+
+It may be included as a hook to allow distributions to maintain a stable code base from this repository (including the ".appveyor.yml" file), but still allow configuration changes (eg, for CORE modules using `set DIST_SUPPRESS_DEPS=1`).
+
+## "vendoring"
+
+This repository can be "vendored" into a distribution by including both the [".appveyor.yml"](https://github.com/rivy/AppVeyorCI.helpers-perl/blob/master/.appveyor.yml) configuration file and a copy of the [".appveyor_bin"](https://github.com/rivy/AppVeyorCI.helpers-perl/tree/master/.appveyor_bin) directory at the root directory level of the distribution. During AppVeyor execution of the ".appveyor.yml" file, when the ".appveyor_bin" directory is found, the code within that directory will supersede and suppress cloning/downloading of the repository helper files.
