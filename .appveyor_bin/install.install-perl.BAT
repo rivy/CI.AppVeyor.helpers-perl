@@ -24,6 +24,16 @@ if "%perl_version%"=="5.14.4" ( set "perl_download=http://strawberryperl.com/dow
 if "%perl_version%"=="5.16.3" ( set "perl_download=http://strawberryperl.com/download/5.16.3.1/strawberry-perl-5.16.3.1-64bit.zip" )
 if "%perl_version%"=="5.18.4" ( set "perl_download=http://strawberryperl.com/download/5.18.4.1/strawberry-perl-5.18.4.1-64bit.zip" )
 
+:: ## setup download area (CI_CACHE_DIR availability is not assumed)
+
+set "_DL_DIR=%CI_CACHE_DIR%"
+if not defined _DL_DIR set "_DL_DIR=%CI_TEMP_DIR%"
+if not defined _DL_DIR set "_DL_DIR=%TEMP%"
+if not defined _DL_DIR set "_DL_DIR=%TMP%"
+if not defined _DL_DIR set "_DL_DIR=C:\."
+set "_DL_DIR=%_DL_DIR%\perl.download"
+if not exist "%_DL_DIR%" mkdir "%_DL_DIR%"
+
 :: ## install
 echo|set /p OUTPUT="Installing Strawberry Perl "
 
@@ -32,13 +42,14 @@ if /i not "%perl_version%" == "latest" ( set "cinst_options=%cinst_options% --ve
 
 if not defined perl_download (
   echo|set /p OUTPUT="(%perl_version%; via Chocolatey [`cinst %cinst_options% StrawberryPerl`]) ... "
+  call choco config set cacheLocation "%_DL_DIR%" >NUL
   call cinst %cinst_options% StrawberryPerl | rem # script fails here if STDOUT redirected to NUL [AppVeyor bug]
 ) else (
   echo|set /p OUTPUT="(%perl_version%; via direct download) ... "
-  call curl -# -L "%perl_download%" -o c:\strawberryperl.zip >NUL 2>&1 && call 7z -bd x c:\strawberryperl.zip -oc:\strawberry >NUL
+  call curl -# -L "%perl_download%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
 )
 
-if "%ERRORLEVEL%" == "0" ( echo done ) else ( echo FAILED [ERRORLEVEL=%ERRORLEVEL%] & exit /b -1 )
+if "%ERRORLEVEL%" == "0" ( echo done ) else ( echo install.install-perl::FAILED [ERRORLEVEL=%ERRORLEVEL%] & exit /b -1 )
 
 :: ## configure
 echo|set /p OUTPUT="Configuring Perl ... "

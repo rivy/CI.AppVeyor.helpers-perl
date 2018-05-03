@@ -26,6 +26,7 @@ The ".appveyor.yml" file can also serve as an example for building other AppVeyo
 |||
 -|-|:-
 CI_HELPER_BRANCH    | "" => auto-set, valid alternates are [ "stable" (the default), "canary", BRANCH or TAG ]
+CI_HELPER_REPO      | "" => auto-set; allows easier use of alternate helper scripts (ie, alternate forks)
 DEVEL_COVER_OPTIONS | "" => auto-set, value determined by DIST_TOOLING <br> " " is a neutral setting which will block auto-set
 DIST_EXTRA_DEPS     | additional required/requested dependencies for building and/or testing
 DIST_SUPPRESS_DEPS  | [ "" == `false`, otherwise `true` ] <br> `true` can be useful for CORE modules, suppressing testing for and installing of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS)
@@ -40,9 +41,14 @@ These variables have intelligent defaults and can, in general, be left alone as 
 
 |||
 -|-
-CI_DEBUG | [ "" == false, <non-empty> == true ]; "true" enables detailed output for the helper scripts
+CI_CACHE_DIR    | cache directory (set and constructed, but essentially unused [* see below])
+CI_DEBUG        | [ "" == false, <non-empty> == true ]; "true" enables detailed output for the helper scripts
 CI_HELPERS      | path of directory containing "helper" scripts
 CI_TEMP_DIR     | working directory
+
+Note that caching can drop the perl install time by about 15% (or about 10 secs). Because this is such a small overall time savings and because the available cache, at 1GB total across all projects, is too small to be helpful, caching remains ununsed.
+
+<br>ref: <https://www.appveyor.com/docs/build-cache/#cache-size-beta>
 
 #### [".appveyor_bin"](https://github.com/rivy/AppVeyorCI.helpers-perl/tree/master/.appveyor_bin)
 
@@ -56,9 +62,9 @@ Please note that these are secrets and should be treated as such. Neither of the
 
 ### Optional distribution files
 
-#### ".appveyor_env.{BAT,PS1}"
+#### ".appveyor_init.{BAT,PS1}"
 
-The files ".appveyor_env.BAT" and/or ".appveyor_env.PS1" (**which are not included in the repo**) can serve as distribution-specific overrides of the AppVeyor configuration, especially (but not limited to) overriding global environment variables.
+The files ".appveyor_init.BAT" and/or ".appveyor_init.PS1" (**which are not included in the repo**) can serve as distribution-specific overrides of the AppVeyor configuration, especially (but not limited to) overriding global environment variables.
 
 It may be included as a hook to allow distributions to maintain a stable code base from this repository (including the ".appveyor.yml" file), but still allow configuration changes (eg, for CORE modules using `set DIST_SUPPRESS_DEPS=1`).
 

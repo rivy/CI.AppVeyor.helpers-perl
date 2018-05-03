@@ -17,6 +17,7 @@ environment:
   matrix:
     - Perl_VERSION: "latest"
       COVERAGE: "Codecov Coveralls" ## note: case sensitive!
+    - Perl_VERSION: "latest"
     - Perl_VERSION: "5.24.3.1"
     - Perl_VERSION: "5.22.3.1"
     - Perl_VERSION: "5.20.3.3"
@@ -26,65 +27,104 @@ environment:
     - Perl_VERSION: "5.10"
     - Perl_VERSION: "5.8"
     - Perl_VERSION: "5.8.8"
+  global:
+    CI_CACHE_DIR: C:\cache
 
-# note: cache is too small (unshared; 1GB across all projects) to be helpful
-# cache:
-#     - C:\strawberry -> .appveyor.yml
+cache:
+# note: unused, because, unfortunately, the available cache is too small to be helpful (unshared; 1GB across all projects)
+#   - '%CI_CACHE_DIR% -> .appveyor.yml'
 
-install:
-  - echo [%TIME%] { install }
-  ## debug?
-  if NOT DEFINED CI_DEBUG ( set "CI_DEBUG=" )     ## [ "" == false, <non-empty> == true ]; "true" enables detailed output for the helper scripts
-  ## configuration (".appveyor_env.{BAT,PS1}", if present, can override these values [by design])
-  if NOT DEFINED CI_HELPER_BRANCH    ( set "CI_DEBUG=" )     ## "" => auto-set, valid alternates are [ "stable" (the default), "canary", BRANCH, or TAG ]
-  if NOT DEFINED DEVEL_COVER_OPTIONS ( set "DEVEL_COVER_OPTIONS=" ) ## "" => auto-set, value determined by DIST_TOOLING; " " is a neutral setting which will block auto-set
-  if NOT DEFINED DIST_EXTRA_DEPS     ( set "DIST_EXTRA_DEPS=" )     ## additional required/requested dependencies for build and/or testing
-  if NOT DEFINED DIST_SUPPRESS_DEPS  ( set "DIST_SUPPRESS_DEPS=" )  ## [ "" == false, <non-empty> == true ]; "true" can be useful for CORE modules, suppressing testing for and installing of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS)
-  if NOT DEFINED DIST_TOOLING        ( set "DIST_TOOLING=" )        ## [ "build", "make" ]; "" => auto-set based on existence of "Build.PL" and/or "Makefile.PL"
-  if NOT DEFINED TEST_METHOD         ( set "TEST_METHOD=" )         ## "" => auto-set to generally either `prove -b` for build/make distributions or `prove -l` otherwise (eg, dzil distributions)
+init:
+  - ps: ;"[{0:HH:mm:ss}].init" -f $($mark = get-date; $mark)
+  # debug?  ## CI_DEBUG ... [ "" == false, <non-empty> == true ]; "true" enables detailed output for the helper scripts
+  - if NOT DEFINED CI_DEBUG ( set "CI_DEBUG=" )
+  ## configuration (".appveyor_init.{BAT,PS1}", if present, may override these values [by design])
+  # * standard perl distribution test configuration signals
+  - if NOT DEFINED AUTHOR_TESTING ( set "AUTHOR_TESTING=" )
+  - if NOT DEFINED RELEASE_TESTING ( set "RELEASE_TESTING=" )
+  # * CI_HELPER_BRANCH ... "" => auto-set, valid alternates are [ "stable" (the default), "canary", BRANCH, or TAG ]
+  - if NOT DEFINED CI_HELPER_BRANCH ( set "CI_HELPER_BRANCH=" )
+  # * CI_HELPER_REPO ... "" => auto-set; allows easier use of alternate helper scripts (ie, alternate forks)
+  - if NOT DEFINED CI_HELPER_REPO ( set "CI_HELPER_REPO=" )
+  # * DEVEL_COVER_OPTIONS ... "" => auto-set, value determined by DIST_TOOLING; " " is a neutral setting which will block auto-set
+  - if NOT DEFINED DEVEL_COVER_OPTIONS ( set "DEVEL_COVER_OPTIONS=" )
+  # * DIST_EXTRA_DEPS ... additional required/requested dependencies for build and/or testing
+  - if NOT DEFINED DIST_EXTRA_DEPS ( set "DIST_EXTRA_DEPS=" )
+  # * DIST_SUPPRESS_DEPS ... [ "" == false, <non-empty> == true ]; "true" can be useful for CORE modules, suppressing testing for and installing of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS)
+  - if NOT DEFINED DIST_SUPPRESS_DEPS ( set "DIST_SUPPRESS_DEPS=" )
+  # * DIST_TOOLING ... [ "build", "make" ]; "" => auto-set based on existence of "Build.PL" and/or "Makefile.PL"
+  - if NOT DEFINED DIST_TOOLING ( set "DIST_TOOLING=" )
+  # * TEST_METHOD ... "" => auto-set to generally either `prove -b` for build/make distributions or `prove -l` otherwise (eg, dzil distributions)
+  - if NOT DEFINED TEST_METHOD ( set "TEST_METHOD=" )
   ## ---
+  # ensure CWD is project main directory
+  - cd "%APPVEYOR_BUILD_FOLDER%"
   # perform any special preparation (optional; distribution specific)
   # * note: optional external file(s), global scope => allows ".appveyor.yml" to remain more stable and similar [or the same] between different distributions [eg, for automated distribution of ".appveyor.yml" changes]
-  - if EXIST ".appveyor_env.BAT" ( call .appveyor_env.BAT )
-  - ps: if ( test-path ".appveyor_env.PS1" ) { . ".\.appveyor_env.PS1" }
+  - if EXIST ".appveyor_init.BAT" ( call .appveyor_init.BAT )
+  - ps: if ( test-path ".appveyor_init.PS1" ) { . ".\.appveyor_init.PS1" }
   # create a working area
   - ps: if ( ! $env:CI_TEMP_DIR ) { $env:CI_TEMP_DIR = "${env:TEMP}\${env:APPVEYOR_JOB_ID}" ; mkdir -force $env:CI_TEMP_DIR | out-null }
-  # find / download helpers
-  # * use "vendored" copy if present
-  - if NOT DEFINED CI_HELPERS if EXIST ".appveyor_bin" ( set "CI_HELPERS=.\.appveyor_bin" )
-  # * download helpers from repo if needed
+  # create cache area, if missing
+  - if NOT DEFINED CI_CACHE_DIR ( set "CI_CACHE_DIR=%CI_TEMP_DIR%\cache" )
+  - if NOT EXIST "%CI_CACHE_DIR%" ( mkdir "%CI_CACHE_DIR%" )
+  # if DEBUG, show build-related environment variables
+  - if DEFINED CI_DEBUG ( call "%CI_HELPERS%\log-env.BAT" )
+  # finalize HELPER repository pointers
+  - if NOT DEFINED CI_HELPER_REPO ( set "CI_HELPER_REPO=https://github.com/rivy/AppVeyorCI.helpers-perl.git" )
   - if NOT DEFINED CI_HELPER_BRANCH ( set "CI_HELPER_BRANCH=stable" )
-  - ps: if ( ! $env:CI_HELPERS ) { $repo_path = $( mkdir "${env:CI_TEMP_DIR}\helpers" ).Fullname ; & 'CMD' @( '/c', "git clone https://github.com/rivy/AppVeyorCI.helpers-perl.git `"$repo_path`" -b $env:CI_HELPER_BRANCH 2>&1" ) ; $env:CI_HELPERS = "${repo_path}\.appveyor_bin" }
+  # if DEBUG, show build-related environment variables
+  - if DEFINED CI_DEBUG ( call "%CI_HELPERS%\log-env.BAT" )
+  #
+  - ps: ;"[{0:HH:mm:ss}].init ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)
+
+install:
+  - ps: ;"[{0:HH:mm:ss}].install" -f $($mark = get-date; $mark)
+  # ensure CWD is project main directory
+  - cd "%APPVEYOR_BUILD_FOLDER%"
+  # find / download helpers
+  - ps: ;"[{0:HH:mm:ss}].install ... helpers" -f $($mark_sub = get-date; $mark_sub)
+  # * use "vendored" copy if present
+  - ps: if ( ! $env:CI_HELPERS -and (test-path ".appveyor_bin") ) { $env:CI_HELPERS=[IO.Path]::GetFullPath(".appveyor_bin") ; "[{0:HH:mm:ss}].install ... helpers ... (vendored)" -f $(get-date) }
+  # * clone/download helpers from repo if needed
+  - ps: if ( ! $env:CI_HELPERS ) { $repo_path = $( mkdir "${env:CI_TEMP_DIR}\helpers" ).Fullname ; $git_cmd = "git clone ${env:CI_HELPER_REPO} `"${repo_path}`" -b ${env:CI_HELPER_BRANCH} 2>&1"; write-host "``${git_cmd}``"; & 'CMD' @( '/c', $git_cmd ) ; $env:CI_HELPERS = "${repo_path}\.appveyor_bin" }
+  - ps: ;"[{0:HH:mm:ss}].install ... helpers ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)
   # resolve requested coverage with needed configuration
-  - ps: . "${env:CI_HELPERS}\install.eval-coverage.ps1"
+  - ps: . "${env:CI_HELPERS}\install.evaluate-coverage.ps1"
   ##
   # move "C:\mingw" to avoid cross library linking (a problem with older perl versions, breaking dll compilation with "/mingw/lib/dllcrt2.o:(.text+0xd1): undefined reference to `__dyn_tls_init_callback'")
   # * only truly needed for modules containing XS compilation, but ok for all modules
   - move c:\mingw c:\mingw.o >NUL
-  # ensure CWD is project main directory
-  - cd "%APPVEYOR_BUILD_FOLDER%"
   # force branch checkout (if knowable), then reset to the specific commit ## (needed for accurate code coverage info)
   # * this allows later apps to see the branch name using standard `git branch` operations, yet always builds the correct specific commit
   # * ref: <https://github.com/appveyor/ci/issues/1606>[`@`](https://archive.is/RVpnF)
   - if DEFINED APPVEYOR_REPO_BRANCH if /I "%APPVEYOR_REPO_SCM%"=="git" ( git checkout "%APPVEYOR_REPO_BRANCH%" & git reset --hard "%APPVEYOR_REPO_COMMIT%" )
   # install perl (strawberry variant) + version verification
+  - ps: ;"[{0:HH:mm:ss}].install ... perl" -f $($mark_sub = get-date; $mark_sub)
   - call "%CI_HELPERS%\install.install-perl.BAT"
   - perl -V
+  - ps: ;"[{0:HH:mm:ss}].install ... perl ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)
   # determine build tooling
   - if NOT DEFINED DIST_TOOLING if EXIST "Build.PL" ( set "DIST_TOOLING=build" )
   - if NOT DEFINED DIST_TOOLING if EXIST "Makefile.PL" ( set "DIST_TOOLING=make" )
   # setup DEVEL_COVER_OPTIONS, if needed
   - ps: if (! $env:DEVEL_COVER_OPTIONS) { . "${env:CI_HELPERS}\install.setup-cover-options.ps1" }
-  # setup testing method/options, based on distrbution tooling and existence of "blib"
+  # setup testing method/options, based on distribution tooling and existence of "blib"
   - if NOT DEFINED TEST_METHOD if NOT DEFINED DIST_TOOLING if NOT EXIST "blib" ( set "TEST_METHOD=prove -l" )
   - if NOT DEFINED TEST_METHOD ( set "TEST_METHOD=prove -b" )
   # distribution prep prior to the build/make process (ie, build dependencies and OS_unsupported check)
+  - ps: ;"[{0:HH:mm:ss}].install ... distribution requirements" -f $($mark_sub = get-date; $mark_sub)
   - call "%CI_HELPERS%\install.setup-dist.BAT"
+  - ps: ;"[{0:HH:mm:ss}].install ... distribution requirements ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)
   # coverage prep
+  - ps: ;"[{0:HH:mm:ss}].install ... coverage" -f $($mark_sub = get-date; $mark_sub)
   - ps: . "${env:CI_HELPERS}\install.setup-coverage.ps1"
+  - ps: ;"[{0:HH:mm:ss}].install ... coverage ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)
+  #
+  - ps: ;"[{0:HH:mm:ss}].install ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)
 
 before_build:
-  - echo [%TIME%] { before_build }
+  - ps: ;"[{0:HH:mm:ss}].before_build" -f $($mark = get-date; $mark)
   # ensure CWD is project main directory
   - cd "%APPVEYOR_BUILD_FOLDER%"
   # setup environment options
@@ -100,20 +140,26 @@ before_build:
   - call "%CI_HELPERS%\before_build.dist.BAT"
   # show final build-related environment variables
   - call "%CI_HELPERS%\log-env.BAT"
-
+  #
+  - ps: ;"[{0:HH:mm:ss}].before_build ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)
 
 build_script:
-  - echo [%TIME%] { build } & call "%CI_HELPERS%\build.dist.BAT"
+  - ps: ;"[{0:HH:mm:ss}].build" -f $($mark = get-date; $mark)
+  - call "%CI_HELPERS%\build.dist.BAT"
+  - ps: ;"[{0:HH:mm:ss}].build ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)
 
 test_script:
-  - echo [%TIME%] { test } `%TEST_METHOD%` & call %TEST_METHOD%
+  - ps: ;"[{0:HH:mm:ss}].test [``${env:TEST_METHOD}``]" -f $($mark = get-date; $mark)
+  - call %TEST_METHOD%
+  - ps: ;"[{0:HH:mm:ss}].test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)
 
 after_test:
-  - echo [%TIME%] { after_test }
+  - ps: ;"[{0:HH:mm:ss}].after_test" -f $($mark = get-date; $mark)
   # reporting
   # * report any code coverage information
   - ps: |
       if (-not $env:OS_unsupported -and $env:COVERAGE) { $env:COVERAGE.split() | foreach { CMD /c "cover -report $_ 2>&1" } }
+  - ps: ;"[{0:HH:mm:ss}].after_test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)
   # end with a prominent "unsupported" notice/warning, when needed
   - ps: |
       if ($env:OS_unsupported) { write-host -f magenta "WARN: OS unsupported" }
