@@ -1,6 +1,6 @@
 @setlocal
 @echo off
-if DEFINED CI_HELPER_DEBUG ( echo on )
+if DEFINED CI_DEBUG ( echo on )
 set "ERRORLEVEL="
 
 :: cpanm-mods-only == CPANM MODuleS ONLY

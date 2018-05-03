@@ -1,5 +1,5 @@
 @echo off
-if DEFINED CI_HELPER_DEBUG ( echo on )
+if DEFINED CI_DEBUG ( echo on )
 set "ERRORLEVEL="
 
 :: NOTE: contains some peculiar statement ordering and redirections b/c of AppVeyor bugs when executing BAT/CMD scripts

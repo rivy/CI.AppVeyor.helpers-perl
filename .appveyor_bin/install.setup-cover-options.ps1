@@ -1,5 +1,5 @@
 # setup DEVEL_COVER_OPTIONS
-if ( $env:CI_HELPER_DEBUG ) { set-PSdebug -trace 1 }
+if ( $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 if (! $env:DEVEL_COVER_OPTIONS) {
 	$options = @()
