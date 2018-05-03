@@ -1,4 +1,5 @@
 @echo off
+if DEFINED CI_HELPER_DEBUG ( echo on )
 set "ERRORLEVEL="
 
 if DEFINED OS_unsupported ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )

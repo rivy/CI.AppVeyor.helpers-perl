@@ -1,4 +1,5 @@
 @echo off
+if DEFINED CI_HELPER_DEBUG ( echo on )
 set "ERRORLEVEL=" &:: UN-pin ERRORLEVEL
 
 if DEFINED DIST_SUPPRESS_DEPS if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo INFO: skipping dependency testing/installation & goto :_check_OS_unsupported_ )

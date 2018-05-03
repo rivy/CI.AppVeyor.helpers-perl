@@ -1,4 +1,5 @@
 # install any needed code coverage dependencies
+if ( $env:CI_HELPER_DEBUG ) { set-PSdebug -trace 1 }
 
 if (-not $env:OS_unsupported -and $env:COVERAGE) {
     # install coverage support
@@ -16,3 +17,5 @@ if (-not $env:OS_unsupported -and $env:COVERAGE) {
             }
         }
 }
+
+set-PSdebug -off

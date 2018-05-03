@@ -40,6 +40,7 @@ These variables have intelligent defaults and can, in general, be left alone as 
 
 |||
 -|-
+CI_HELPER_DEBUG | [ "" == false, <non-empty> == true ]; "true" enables detailed output for the helper scripts
 CI_HELPERS      | path of directory containing "helper" scripts
 CI_TEMP_DIR     | working directory
 

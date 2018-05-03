@@ -1,4 +1,5 @@
 # setup DEVEL_COVER_OPTIONS
+if ( $env:CI_HELPER_DEBUG ) { set-PSdebug -trace 1 }
 
 if (! $env:DEVEL_COVER_OPTIONS) {
 	$options = @()
@@ -10,3 +11,5 @@ if (! $env:DEVEL_COVER_OPTIONS) {
     $env:DEVEL_COVER_OPTIONS = $options -join ","
     # write-host "env:COVERAGE = $env:COVERAGE"
 }
+
+set-PSdebug -off

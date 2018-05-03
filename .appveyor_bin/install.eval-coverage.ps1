@@ -1,4 +1,5 @@
 # check code coverage
+if ( $env:CI_HELPER_DEBUG ) { set-PSdebug -trace 1 }
 
 if ($env:COVERAGE) {
     # determine coverage support (signaled by <COVERAGE_TYPE>_TOKEN environment vars)
@@ -17,3 +18,5 @@ if ($env:COVERAGE) {
     $env:COVERAGE = $coverage -join " "
     # write-host "env:COVERAGE = $env:COVERAGE"
 }
+
+set-PSdebug -off
