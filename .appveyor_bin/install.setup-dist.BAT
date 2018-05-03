@@ -6,10 +6,10 @@ if DEFINED DIST_SUPPRESS_DEPS if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_
 if NOT DEFINED DIST_TOOLING if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo INFO: skipping dependency testing/installation for non-build/make distribution & goto :_install_extras_ )
 
 ::# * install `cpanm` (needed for older perl versions)
-echo ### install `cpanm`
+echo [%TIME%] ### install `cpanm`
 call cpan -T -i App::cpanminus
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
-echo ### install basic modules with "issues"
+echo [%TIME%] ### install basic modules with "issues"
 ::# * pre-install problematic modules (especially for perl versions < 5.14)
 ::#   'ExtUtils::MakeMaker' ## (CORE module)
 ::#   - for perl versions < 5.14, installing ExtUtils::MakeMaker >= 7.0 causes ... "The system cannot find the path specified.\ndmake.exe:  Error code 129, while making 'blib\lib\ExtUtils\.exists'"
@@ -31,13 +31,13 @@ if DEFINED DIST_SUPPRESS_DEPS ( goto :_check_OS_unsupported_ )
 if NOT DEFINED DIST_TOOLING ( goto :_install_extras_ )
 
 ::# install baseline dependencies
-echo ### install distribution dependencies
+echo [%TIME%] ### install distribution dependencies
 call cpanm --no-interactive --no-man-pages --notest --quiet --skip-satisfied --installdeps .
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 
 ::# check OS_unsupported
 :_check_OS_unsupported_
-echo ### OS_unsupported ?
+echo [%TIME%] ### OS_unsupported ?
 if /I "%DIST_TOOLING%"=="build" (
     set "_DIST_PREBUILDER=perl Build.PL"
   ) else (
@@ -51,7 +51,7 @@ if DEFINED OS_unsupported ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 ::# install any "extra" requested dependencies
 :_install_extras_
-if DEFINED DIST_EXTRA_DEPS ( echo ### install "extra" modules )
+if DEFINED DIST_EXTRA_DEPS ( echo [%TIME%] ### install "extra" modules )
 if DEFINED DIST_EXTRA_DEPS ( call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest --quiet %DIST_EXTRA_DEPS% 2>&1 )
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 
@@ -59,14 +59,14 @@ if DEFINED DIST_SUPPRESS_DEPS ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 if NOT DEFINED DIST_TOOLING ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 ::# install any further optional dependencies
-echo ### install recommended modules
+echo [%TIME%] ### install recommended modules
 call cpanm --no-interactive --no-man-pages --notest --quiet --skip-satisfied --with-recommends --installdeps .
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 ::
-echo ### # ... HACK for `cpanm` overlooking "test_recommends"
+echo [%TIME%] ### # ... HACK for `cpanm` overlooking "test_recommends"
 ::# note: `cpanm` will sometimes overlook "test_recommends" modules; this bug is reproducible but only occurs for some distributions
 ::# * HACK `cpanm`, creating a faux distribution directory with a minimal "Makefile.PL" and META build information
-echo ### # ... .... create faux distribution
+echo [%TIME%] ### # ... .... create faux distribution
 set "_dir=%TEMP%\%APPVEYOR_JOB_ID%\cpanm-rec-hack"
 if EXIST "%_dir%" ( rmdir /s/q "%_dir%" )
 mkdir "%_dir%"
@@ -75,6 +75,6 @@ copy META.* "%_dir%" >NUL 2>&1 || cd . &:: suppress any error
 copy MYMETA.* "%_dir%" >NUL 2>&1 || cd . &:: suppress any error
 pushd "%_dir%"
 echo use ExtUtils::MakeMaker; WriteMakefile(); > Makefile.PL    &:: create minimal Makefile.PL
-echo ### # ... .... re-run `cpanm`
+echo [%TIME%] ### # ... .... re-run `cpanm`
 call cpanm --no-interactive --no-man-pages --notest --quiet --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" .
 popd
