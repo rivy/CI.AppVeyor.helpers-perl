@@ -14,15 +14,6 @@ branches:
 skip_tags: true     ## do not build on tags
 
 environment:
-  global:
-    ## configuration (".appveyor_env.{BAT,PS1}", if present, can override these values [by design])
-    CI_HELPER_BRANCH: ""        ## "" => auto-set, valid alternates are [ "stable" (the default), "canary", BRANCH, or TAG ]
-    DEVEL_COVER_OPTIONS: ""     ## "" => auto-set, value determined by DIST_TOOLING; " " is a neutral setting which will block auto-set
-    DIST_EXTRA_DEPS: ""         ## additional required/requested dependencies for build and/or testing
-    DIST_SUPPRESS_DEPS: ""      ## [ "" == false, <non-empty> == true ]; "true" can be useful for CORE modules, suppressing testing for and installing of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS)
-    DIST_TOOLING: ""            ## [ "build", "make" ]; "" => auto-set based on existence of "Build.PL" and/or "Makefile.PL"
-    TEST_METHOD: ""	            ## "" => auto-set to generally either `prove -b` for build/make distributions or `prove -l` otherwise (eg, dzil distributions)
-    ## ---
   matrix:
     - Perl_VERSION: "latest"
       COVERAGE: "Codecov Coveralls" ## note: case sensitive!
@@ -42,9 +33,16 @@ environment:
 
 install:
   - echo [%TIME%] { install }
-  ##
+  ## debug?
   if NOT DEFINED CI_HELPER_DEBUG ( set "CI_HELPER_DEBUG=" )     ## [ "" == false, <non-empty> == true ]; "true" enables detailed output for the helper scripts
-  ##
+  ## configuration (".appveyor_env.{BAT,PS1}", if present, can override these values [by design])
+  if NOT DEFINED CI_HELPER_BRANCH    ( set "CI_HELPER_DEBUG=" )     ## "" => auto-set, valid alternates are [ "stable" (the default), "canary", BRANCH, or TAG ]
+  if NOT DEFINED DEVEL_COVER_OPTIONS ( set "DEVEL_COVER_OPTIONS=" ) ## "" => auto-set, value determined by DIST_TOOLING; " " is a neutral setting which will block auto-set
+  if NOT DEFINED DIST_EXTRA_DEPS     ( set "DIST_EXTRA_DEPS=" )     ## additional required/requested dependencies for build and/or testing
+  if NOT DEFINED DIST_SUPPRESS_DEPS  ( set "DIST_SUPPRESS_DEPS=" )  ## [ "" == false, <non-empty> == true ]; "true" can be useful for CORE modules, suppressing testing for and installing of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS)
+  if NOT DEFINED DIST_TOOLING        ( set "DIST_TOOLING=" )        ## [ "build", "make" ]; "" => auto-set based on existence of "Build.PL" and/or "Makefile.PL"
+  if NOT DEFINED TEST_METHOD         ( set "TEST_METHOD=" )         ## "" => auto-set to generally either `prove -b` for build/make distributions or `prove -l` otherwise (eg, dzil distributions)
+  ## ---
   # perform any special preparation (optional; distribution specific)
   # * note: optional external file(s), global scope => allows ".appveyor.yml" to remain more stable and similar [or the same] between different distributions [eg, for automated distribution of ".appveyor.yml" changes]
   - if EXIST ".appveyor_env.BAT" ( call .appveyor_env.BAT )
