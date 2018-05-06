@@ -1,6 +1,11 @@
 @echo off
 set "ERRORLEVEL="
 
+echo.
+
+echo AUTHOR_TESTING=%AUTHOR_TESTING%
+echo RELEASE_TESTING=%RELEASE_TESTING%
+echo .
 echo AUTOMATED_TESTING=%AUTOMATED_TESTING%
 echo COVERAGE=%COVERAGE%
 echo CI_DEBUG=%CI_DEBUG%
@@ -18,4 +23,7 @@ echo make=%make%
 echo OS_unsupported=%OS_unsupported%
 :: echo PATH=%PATH%
 echo PERL5OPT=%PERL5OPT%
+echo TEST_FILES=%TEST_FILES%
 echo TEST_METHOD=%TEST_METHOD%
+
+echo.

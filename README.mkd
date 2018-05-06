@@ -13,7 +13,9 @@ This repository contains a complete [AppVeyor CI](https://appveyor.com) configur
 > ###### Optional extra steps
 >
 > 1. Enable "Skip branches without appveyor.yml" (located within the "General" section of the AppVeyor project settings).
-> 2. Enable code coverage reports by adding `CODECOV_TOKEN` and/or `COVERALLS_TOKEN` environment variables containing code coverage API tokens. These environment variables are set within the "Environment" section of the AppVeyor project settings. The API token values can be obtained from observer projects on [CodeCov](https://codecov.io) and/or [Coveralls](https://coveralls.io), respectively. The values are secrets and should be encrypted (by clicking the lock icon next to each value).
+> 2. Enable code coverage reports ...
+>    1. Create a project or projects on [CodeCov](https://codecov.io) and/or [Coveralls](https://coveralls.io) which observes the distribution repository.
+>    2. Copy the API token value obtained from the observer project(s) into their respective environment variables (`CODECOV_TOKEN` and/or `COVERALLS_TOKEN`) within the AppVeyor project. These environment variables are set within the "Environment" section of the AppVeyor project settings. Note that the API token values are secrets and should be encrypted (by clicking the lock icon next to each value).
 
 ## The Details
 
@@ -34,10 +36,9 @@ CI_HELPER_REPO      | "" => auto-set; allows easier use of alternate helper scri
 COVERAGE            | requested coverage types <br> may include [ "CodeCov", "Coveralls" ], space separated, case is significant; default is none ("")
 DEVEL_COVER_OPTIONS | options for `cover` <br> "" => auto-set, value determined by DIST_TOOLING <br> " " is a neutral setting which will block auto-set
 DIST_EXTRA_DEPS     | additional required/requested dependencies for building and/or testing
-DIST_SUPPRESS_DEPS  | [ "" == `false`, otherwise `true` ] <br> `true` can be useful for CORE modules, suppressing testing for and installing of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS)
+DIST_SUPPRESS_DEPS  | [ "" == `false`, otherwise `true` ] <br> `true` can be useful for CORE modules, suppressing discovery and installation of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS)
 DIST_TOOLING        | [ "build", "make" ] <br>"" => auto-set based on existence of "Build.PL" and/or "Makefile.PL"
-TEST_METHOD         | "" => auto-set to `prove -b` or `prove -l` based on DIST_TOOLING and existence of the "blib" directory
-
+TEST_METHOD         | "" => auto-set to `prove -bl`
 
 These variables have intelligent defaults and can, in general, be left alone as "". They are usually only necessary for special circumstances.
 
@@ -54,9 +55,9 @@ CI_TEMP_DIR     | working directory
 
 Note that caching can drop the perl install time by about 15% (or about 10 secs). Because this is such a small overall time savings and because the available cache, at 1GB total across all projects, is too small to be helpful, caching remains unused.
 
-<br>ref: <https://www.appveyor.com/docs/build-cache/#cache-size-beta>
+<a/>ref: <https://www.appveyor.com/docs/build-cache/#cache-size-beta>
 
-### [".appveyor_bin"](https://github.com/rivy/AppVeyorCI.helpers-perl/tree/master/.appveyor_bin)
+### [".appveyor_bin"](https://github.com/rivy/AppVeyorCI.helpers-perl/tree/stable/.appveyor_bin)
 
 The ".appveyor_bin" directory contains multiple helper scripts to streamline ".appveyor.yml" and to provide workarounds for various build issues (within both the AppVeyor and the Perl build/test processes).
 

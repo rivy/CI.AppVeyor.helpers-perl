@@ -2,8 +2,11 @@
 if DEFINED CI_DEBUG ( echo on )
 set "ERRORLEVEL=" &:: UN-pin ERRORLEVEL
 
-if DEFINED DIST_SUPPRESS_DEPS if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo INFO: skipping dependency testing/installation & goto :_check_OS_unsupported_ )
-if NOT DEFINED DIST_TOOLING if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo INFO: skipping dependency testing/installation for non-build/make distribution & goto :_install_extras_ )
+if DEFINED DIST_SUPPRESS_DEPS if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo INFO: skipping dependency discovery/installation [DIST_SUPPRESS_DEPS=%DIST_SUPPRESS_DEPS%] & goto :_check_OS_unsupported_ )
+if NOT DEFINED DIST_TOOLING if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo INFO: skipping dependency discovery/installation for non-build/make distribution & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+
+if DEFINED DIST_SUPPRESS_DEPS if DEFINED COVERAGE ( echo INFO: dependency suppression disabled for coverage [COVERAGE=%COVERAGE%] )
+if DEFINED DIST_SUPPRESS_DEPS if DEFINED DIST_EXTRA_DEPS ( echo INFO: dependency suppression disabled for extra dependencies [DIST_EXTRA_DEPS=%DIST_EXTRA_DEPS%] )
 
 ::# * install `cpanm` (needed for older perl versions)
 echo [%TIME%] ### install `cpanm`
@@ -27,8 +30,16 @@ if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVE
 call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest --quiet ExtUtils::ParseXS~">= 3.35" 2>&1
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 
+::# install any "extra" requested dependencies (installed prior to baseline dependencies; may be needed for configuration)
+if DEFINED DIST_EXTRA_DEPS ( echo [%TIME%] ### install "extra" modules )
+if DEFINED DIST_EXTRA_DEPS (
+    echo `call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied %DIST_EXTRA_DEPS%`
+    call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied %DIST_EXTRA_DEPS%
+    )
+if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
+
+if NOT DEFINED DIST_TOOLING ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 if DEFINED DIST_SUPPRESS_DEPS ( goto :_check_OS_unsupported_ )
-if NOT DEFINED DIST_TOOLING ( goto :_install_extras_ )
 
 ::# install baseline dependencies
 echo [%TIME%] ### install distribution dependencies
@@ -48,15 +59,7 @@ if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVE
 set "_DIST_PREBUILDER="
 
 if DEFINED OS_unsupported ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
-
-::# install any "extra" requested dependencies
-:_install_extras_
-if DEFINED DIST_EXTRA_DEPS ( echo [%TIME%] ### install "extra" modules )
-if DEFINED DIST_EXTRA_DEPS ( call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest --quiet %DIST_EXTRA_DEPS% 2>&1 )
-if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
-
 if DEFINED DIST_SUPPRESS_DEPS ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
-if NOT DEFINED DIST_TOOLING ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 ::# install any further optional dependencies
 echo [%TIME%] ### install recommended modules
