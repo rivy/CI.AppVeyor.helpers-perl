@@ -71,9 +71,11 @@ Please note that these are secrets and should be treated as such. Neither of the
 
 #### ".appveyor_init.{BAT,PS1}"
 
-The files ".appveyor_init.BAT" and/or ".appveyor_init.PS1" (**which are not included in the repo**) can serve as distribution-specific overrides of the AppVeyor configuration, especially (but not limited to) overriding global environment variables.
+The files ".appveyor_init.BAT" and/or ".appveyor_init.PS1" can serve as distribution-specific overrides of the AppVeyor configuration, especially (but not limited to) overriding global environment variables.
 
 It may be included as a hook to allow distributions to maintain a stable code base from this repository (including the ".appveyor.yml" file), but still allow configuration changes (eg, for CORE modules using `set DIST_SUPPRESS_DEPS=1`).
+
+A sample [".appveyor_init.BAT"](https://github.com/rivy/AppVeyorCI.helpers-perl/blob/stable/eg/.appveyor_init.BAT) file is included in the ["eg" directory](https://github.com/rivy/AppVeyorCI.helpers-perl/tree/stable/eg).
 
 ### "vendoring"
 
