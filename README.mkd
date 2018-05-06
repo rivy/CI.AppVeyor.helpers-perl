@@ -38,7 +38,8 @@ DEVEL_COVER_OPTIONS | options for `cover` <br> "" => auto-set, value determined 
 DIST_EXTRA_DEPS     | additional required/requested dependencies for building and/or testing
 DIST_SUPPRESS_DEPS  | [ "" == `false`, otherwise `true` ] <br> `true` can be useful for CORE modules, suppressing discovery and installation of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS)
 DIST_TOOLING        | [ "build", "make" ] <br>"" => auto-set based on existence of "Build.PL" and/or "Makefile.PL"
-TEST_METHOD         | "" => auto-set to `prove -bl`
+TEST_METHOD         | "" => auto-set based on DIST_TOOLING (`perl Build test`, `%make% test`, or `prove -bl`)
+TEST_FILES          | "" => auto-set to "" for build/make distributions, otherwise "t" or "t xt" depending on AUTHOR_TESTING and/or RELEASE_TESTING and directory existence
 
 These variables have intelligent defaults and can, in general, be left alone as "". They are usually only necessary for special circumstances.
 
@@ -49,11 +50,11 @@ These variables have intelligent defaults and can, in general, be left alone as 
 |||
 -|-
 CI_CACHE_DIR    | cache directory (set and constructed, but essentially unused [* see below])
-CI_DEBUG        | [ "" == false, <non-empty> == true ]; "true" enables more detailed output for the helper scripts
+CI_DEBUG        | [ "" == false, <non-empty> == true ]; "true" enables more detailed output from the helper scripts
 CI_HELPERS      | path of directory containing "helper" scripts
 CI_TEMP_DIR     | working directory
 
-Note that caching can drop the perl install time by about 15% (or about 10 secs). Because this is such a small overall time savings and because the available cache, at 1GB total across all projects, is too small to be helpful, caching remains unused.
+Note that caching can drop the perl install time by about 10% to 20% (approximately 10 secs). Because this is such a small overall time savings and because the available cache size, at 1GB *total* across *all projects*, is too small to hold the multiple perl downloads, caching remains unused.
 
 <a/>ref: <https://www.appveyor.com/docs/build-cache/#cache-size-beta>
 
