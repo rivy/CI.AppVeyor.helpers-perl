@@ -43,6 +43,7 @@ if DEFINED DIST_SUPPRESS_DEPS ( goto :_check_OS_unsupported_ )
 
 ::# install baseline dependencies
 echo [%TIME%] ### install distribution dependencies
+echo `call cpanm --no-interactive --no-man-pages --notest --quiet --skip-satisfied --installdeps .`
 call cpanm --no-interactive --no-man-pages --notest --quiet --skip-satisfied --installdeps .
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 
@@ -63,6 +64,7 @@ if DEFINED DIST_SUPPRESS_DEPS ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 ::# install any further optional dependencies
 echo [%TIME%] ### install recommended modules
+echo `call cpanm --no-interactive --no-man-pages --notest --quiet --skip-satisfied --with-recommends --installdeps .`
 call cpanm --no-interactive --no-man-pages --notest --quiet --skip-satisfied --with-recommends --installdeps .
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 ::
@@ -78,6 +80,7 @@ copy META.* "%_dir%" >NUL 2>&1 || cd . &:: suppress any error
 copy MYMETA.* "%_dir%" >NUL 2>&1 || cd . &:: suppress any error
 pushd "%_dir%"
 echo use ExtUtils::MakeMaker; WriteMakefile(); > Makefile.PL    &:: create minimal Makefile.PL
-echo [%TIME%] ### # ... .... re-run `cpanm`
+echo [%TIME%] ### # ... .... re-run `cpanm` within faux distribution
+echo `call cpanm --no-interactive --no-man-pages --notest --quiet --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" .`
 call cpanm --no-interactive --no-man-pages --notest --quiet --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" .
 popd
