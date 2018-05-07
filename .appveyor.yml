@@ -62,6 +62,8 @@ install:
   # * note: optional external file(s), global scope => allows ".appveyor.yml" to remain more stable and similar [or the same] between different distributions [eg, for automated distribution of ".appveyor.yml" changes]
   - if EXIST ".appveyor_init.BAT" ( call .appveyor_init.BAT )
   - ps: if ( test-path ".appveyor_init.PS1" ) { . ".\.appveyor_init.PS1" }
+  # save baseline environment (for later logging of overrides)
+  - ps: $base_env = @(get-childitem env:)
   # create a working area
   - ps: if ( ! $env:CI_TEMP_DIR ) { $env:CI_TEMP_DIR = "${env:TEMP}\${env:APPVEYOR_JOB_ID}" ; mkdir -force $env:CI_TEMP_DIR | out-null }
   # create cache area, if missing
@@ -79,6 +81,9 @@ install:
   - ps: ;"[{0:HH:mm:ss}].install ... helpers ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)
   # resolve requested coverage with needed configuration
   - ps: . "${env:CI_HELPERS}\install.evaluate-coverage.ps1"
+  ##
+  # highlight any overrides
+  - ps: $base_env | & "${env:CI_HELPERS}\log-env-overrides.ps1"
   ##
   # move "C:\mingw" to avoid cross library linking (a problem with older perl versions, breaking dll compilation with "/mingw/lib/dllcrt2.o:(.text+0xd1): undefined reference to `__dyn_tls_init_callback'")
   # * only truly needed for modules containing XS compilation, but ok for all modules
