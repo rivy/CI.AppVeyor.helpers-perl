@@ -16,5 +16,5 @@ mkdir "%tmp_dir%"
 :: change to non-conflicting environment
 cd "%tmp_dir%"
 
-call cpanm %*
+call "%~dp0cpanm.BAT" %*
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )

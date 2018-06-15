@@ -11,10 +11,6 @@ if NOT DEFINED DIST_TOOLING if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DE
 if DEFINED DIST_SUPPRESS_DEPS if DEFINED COVERAGE ( echo INFO: dependency suppression disabled for coverage [COVERAGE=%COVERAGE%] )
 if DEFINED DIST_SUPPRESS_DEPS if DEFINED DIST_EXTRA_DEPS ( echo INFO: dependency suppression disabled for extra dependencies [DIST_EXTRA_DEPS=%DIST_EXTRA_DEPS%] )
 
-::# * install `cpanm` (needed for older perl versions)
-echo [%TIME%] ### install `cpanm`
-call cpan -T -i App::cpanminus
-if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 echo [%TIME%] ### install basic modules with "issues"
 ::# * pre-install problematic modules (especially for perl versions < 5.14)
 ::#   'ExtUtils::MakeMaker' ## (CORE module)
@@ -46,8 +42,8 @@ if DEFINED DIST_SUPPRESS_DEPS ( goto :_check_OS_unsupported_ )
 
 ::# install baseline dependencies
 echo [%TIME%] ### install distribution dependencies
-echo `call cpanm --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps .`
-call cpanm --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps .
+echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps .`
+call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps .
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 
 ::# check OS_unsupported
@@ -67,8 +63,8 @@ if DEFINED DIST_SUPPRESS_DEPS ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 ::# install any further optional dependencies
 echo [%TIME%] ### install recommended modules
-echo `call cpanm --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps .`
-call cpanm --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps .
+echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps .`
+call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps .
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 ::
 echo [%TIME%] ### # ... HACK for `cpanm` overlooking "test_recommends"
@@ -84,6 +80,6 @@ copy MYMETA.* "%_dir%" >NUL 2>&1 || cd . &:: suppress any error
 pushd "%_dir%"
 echo use ExtUtils::MakeMaker; WriteMakefile(); > Makefile.PL    &:: create minimal Makefile.PL
 echo [%TIME%] ### # ... .... re-run `cpanm` within faux distribution
-echo `call cpanm --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" .`
-call cpanm --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" .
+echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" .`
+call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" .
 popd
