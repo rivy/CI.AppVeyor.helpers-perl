@@ -34,7 +34,7 @@ environment:
     # debug?
     # CI_DEBUG: 1               ##  [ "" == false, <non-empty> == true ]; "true" enables detailed output for the helper scripts
     #
-    ## configuration (network-side settings and then ".appveyor_init.{BAT,PS1}" [if present], may override these values [by design])
+    ## configuration (CI/network-side settings and then ".appveyor_init.{BAT,PS1}" [if present], may override these values [by design])
     ## ---
     # * standard perl distribution test configuration signals
     AUTHOR_TESTING: ""
@@ -46,8 +46,8 @@ environment:
     DIST_EXTRA_DEPS: ""         ## additional required/requested dependencies for build and/or testing
     DIST_SUPPRESS_DEPS: ""      ## [ "" == false, <non-empty> == true ]; "true" can be useful for CORE modules, suppressing discovery and installation of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS)
     DIST_TOOLING: ""            ## [ "build", "make" ]; "" => auto-set based on existence of "Build.PL" and/or "Makefile.PL"
-    TEST_METHOD: ""             ## "" => auto-set to `prove -bl`
-    TEST_FILES: ""              ## "" => auto-set to "" or "t xt" if AUTHOR_TESTING and/or RELEASE_TESTING are defined (but only if those directories exist)
+    TEST_METHOD: ""             ## "" => auto-set based on DIST_TOOLING (`perl Build test`, `%make% test`, or `prove -bl`)
+    TEST_FILES: ""              ## "" => auto-set to "" for build/make distributions, otherwise "t" or "t xt" depending on AUTHOR_TESTING and/or RELEASE_TESTING and directory existence
     ## ---
 
 cache:
@@ -102,11 +102,8 @@ install:
   - if NOT DEFINED DIST_TOOLING if EXIST "Makefile.PL" ( set "DIST_TOOLING=make" )
   # setup DEVEL_COVER_OPTIONS, if needed
   - ps: if (! $env:DEVEL_COVER_OPTIONS) { . "${env:CI_HELPERS}\install.setup-cover-options.ps1" }
-  # setup testing method/options
-  - if NOT DEFINED TEST_METHOD ( set "TEST_METHOD=prove -bl" )
-  # setup test files
-  - if NOT DEFINED TEST_FILES if DEFINED AUTHOR_TESTING if EXIST ".\t" if EXIST ".\xt" ( set "TEST_FILES=t xt" )
-  - if NOT DEFINED TEST_FILES if DEFINED RELEASE_TESTING if EXIST ".\t" if EXIST ".\xt" ( set "TEST_FILES=t xt" )
+  # setup testing method/options and test files
+  - ps: . "${env:CI_HELPERS}\install.setup-testing.ps1"
   # distribution prep prior to the build/make process (ie, build dependencies and OS_unsupported check)
   - ps: ;"[{0:HH:mm:ss}].install ... distribution requirements" -f $($mark_sub = get-date; $mark_sub)
   - call "%CI_HELPERS%\install.setup-dist.BAT"
