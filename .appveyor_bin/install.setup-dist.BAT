@@ -22,7 +22,7 @@ if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVE
 ::#   - updated version needed for many installs
 ::#   - 'version' requires 'parent' (missing requirement on some 0.9915+ versions, specifically 0.9918 [most recent on 2018-01-20])
 ::#   - 'version 0.9919' breaks on perl v5.10 thru v5.20
-call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% parent version~"< 0.9919" 2>&1
+call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% parent version~"0.9924" 2>&1
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 ::#   'ExtUtils::ParseXS' ## (CORE module since perl v5.8.9)
 ::#   - updated ParseXS needed to install File::Spec (o/w PathTools installation fails with "Cwd.o:Cwd.c:(.text+0x593): undefined reference to `croak_xs_usage'")
