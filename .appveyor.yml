@@ -1,6 +1,6 @@
 # .appveyor.yml (for Perl distributions)
 
-# * for usage instructions, see <https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/master/README.mkd>
+# * for usage instructions, see <https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable/README.mkd>
 
 # ref: <https://www.appveyor.com/docs/appveyor-yml>[`@`](https://archive.is/OUJHS)
 # * "appveyor.yml" validation tool @ <https://ci.appveyor.com/tools/validate-yaml>

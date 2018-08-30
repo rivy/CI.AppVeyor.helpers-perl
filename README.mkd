@@ -43,7 +43,7 @@ TEST_FILES          | specific test files to use; <br> "" => auto-set to "" for 
 
 These variables have intelligent defaults and can, in general, be left alone as empty strings. Modifications are usually only necessary for special circumstances.
 
-`CI_HELPER_BRANCH` can be used to select between frequent helper updates (eg, "canary"), more stable code (eg, "stable" [the default]), or invariant (using a release TAG). Generally, from most to least stable ... [ "vendoring" (see below) > TAG > stable >= master > canary > BRANCH ]. By definition, code updates and changes to the helper scripts are applied in the inverse order of "stability".
+`CI_HELPER_BRANCH` can be used to select between frequent helper updates (eg, "canary"), more stable code (eg, "stable" [the default]), or invariant (using a release TAG). Generally, from most to least stable ... [ "vendoring" (see below) > TAG > stable > canary > BRANCH ]. By definition, code updates and changes to the helper scripts are applied in the inverse order of "stability".
 
 ###### *.appveyor.yml* utility variables
 
@@ -80,7 +80,7 @@ A sample [*.appveyor_init.BAT*](https://github.com/rivy/CI.AppVeyor.helpers-perl
 
 ### "vendoring"
 
-This repository can be "vendored" into a distribution by including both the [*.appveyor.yml*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/master/.appveyor.yml) configuration file and a copy of the [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/master/.appveyor_bin) directory at the root directory level of the distribution. During AppVeyor execution of the *.appveyor.yml* file, when the *.appveyor_bin* directory is found, the code within that directory will supersede and suppress cloning/downloading of the repository helper files.
+This repository can be "vendored" into a distribution by including both the [*.appveyor.yml*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable/.appveyor.yml) configuration file and a copy of the [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable/.appveyor_bin) directory at the root directory level of the distribution. During AppVeyor execution of the *.appveyor.yml* file, when the *.appveyor_bin* directory is found, the code within that directory will supersede and suppress cloning/downloading of the repository helper files.
 
 ## Copyright and License
 
