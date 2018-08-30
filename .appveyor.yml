@@ -17,10 +17,11 @@ environment:
   matrix:
     - Perl_VERSION: "latest"
       COVERAGE: "Codecov Coveralls" ## note: case sensitive!
-    - Perl_VERSION: "latest"
-    - Perl_VERSION: "5.24.3.1"
-    - Perl_VERSION: "5.22.3.1"
-    - Perl_VERSION: "5.20.3.3"
+    - Perl_VERSION: "5.28"
+    - Perl_VERSION: "5.26"
+    - Perl_VERSION: "5.24"
+    - Perl_VERSION: "5.22"
+    - Perl_VERSION: "5.20"
     - Perl_VERSION: "5.16"
     - Perl_VERSION: "5.14"
     - Perl_VERSION: "5.12"
