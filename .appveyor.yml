@@ -1,6 +1,6 @@
 # .appveyor.yml (for Perl distributions)
 
-# * for usage instructions, see <https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable/README.mkd>
+# * (APIv1) for usage instructions, see <https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/README.mkd>
 
 # ref: <https://www.appveyor.com/docs/appveyor-yml>[`@`](https://archive.is/OUJHS)
 # * "appveyor.yml" validation tool @ <https://ci.appveyor.com/tools/validate-yaml>
@@ -41,6 +41,7 @@ environment:
     AUTHOR_TESTING: ""
     RELEASE_TESTING: ""
     # * .appveyor.yml configuration variables
+    CI_HELPER_API_VERSION: "1"  ## * API version (the expected/requested helper API version)
     CI_HELPER_BRANCH: ""        ## "" => auto-set, valid alternates are [ "stable" (the default), "canary", BRANCH, or TAG ]
     CI_HELPER_REPO: ""          ## "" => auto-set; allows easier use of alternate helper scripts (ie, alternate forks)
     DEVEL_COVER_OPTIONS: ""     ## "" => auto-set, value determined by DIST_TOOLING; quoted whitespace (eg, " ") is an empty/neutral setting which also blocks auto-set
@@ -73,6 +74,8 @@ install:
   # finalize HELPER repository location
   - if NOT DEFINED CI_HELPER_REPO ( set "CI_HELPER_REPO=https://github.com/rivy/CI.AppVeyor.helpers-perl.git" )
   - if NOT DEFINED CI_HELPER_BRANCH ( set "CI_HELPER_BRANCH=stable" )
+  - if /I "%CI_HELPER_BRANCH%"=="canary" ( set "CI_HELPER_BRANCH=canary.APIv%CI_HELPER_API_VERSION%" )
+  - if /I "%CI_HELPER_BRANCH%"=="stable" ( set "CI_HELPER_BRANCH=stable.APIv%CI_HELPER_API_VERSION%" )
   # find / download helpers
   - ps: ; write-host $("[{0:HH:mm:ss}].install (helpers)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   # * use "vendored" copy if present
