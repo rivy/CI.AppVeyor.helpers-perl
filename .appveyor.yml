@@ -43,7 +43,7 @@ environment:
     # * .appveyor.yml configuration variables
     CI_HELPER_BRANCH: ""        ## "" => auto-set, valid alternates are [ "stable" (the default), "canary", BRANCH, or TAG ]
     CI_HELPER_REPO: ""          ## "" => auto-set; allows easier use of alternate helper scripts (ie, alternate forks)
-    DEVEL_COVER_OPTIONS: ""     ## "" => auto-set, value determined by DIST_TOOLING; " " is a neutral setting which will block auto-set
+    DEVEL_COVER_OPTIONS: ""     ## "" => auto-set, value determined by DIST_TOOLING; quoted whitespace (eg, " ") is an empty/neutral setting which also blocks auto-set
     DIST_EXTRA_DEPS: ""         ## additional required/requested dependencies for build and/or testing
     DIST_SUPPRESS_DEPS: ""      ## [ "" == false, <non-empty> == true ]; "true" can be useful for CORE modules, suppressing discovery and installation of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS)
     DIST_TOOLING: ""            ## [ "build", "make" ]; "" => auto-set based on existence of "Build.PL" and/or "Makefile.PL"
