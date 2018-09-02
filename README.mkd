@@ -34,7 +34,7 @@ Alternate build and test methods are possible via the use of configuration varia
 CI_HELPER_API_VERSION | API version (the expected/requested helper API version); <br> [ "1" ]
 CI_HELPER_BRANCH      | helper script repository branch to use; <br> "" => auto-set, valid alternates are [ "stable" (the default), "canary", BRANCH or TAG ]
 CI_HELPER_REPO        | helper script repository to use; <br> "" => auto-set; allows easier use of alternate helper scripts (ie, alternate forks)
-COVERAGE              | requested coverage types; <br> "" => no coverage requested; may include [ "CodeCov", "Coveralls" ], space separated, *case is significant*
+COVERAGE              | requested coverage types; <br> "" => no coverage requested; may include [ "CodeCov", "Coveralls" ], space separated, character case is significant
 DEVEL_COVER_OPTIONS   | options for `cover`; <br> "" => auto-set, value determined by DIST_TOOLING; quoted whitespace (eg, " ") is an empty/neutral setting which also blocks auto-set
 DIST_EXTRA_DEPS       | additional required/requested dependencies for building and/or testing
 DIST_SUPPRESS_DEPS    | suppress discovery and installation of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS); <br> [ "" == `false`, non-empty == `true` ] <br> `true` can be useful for CORE modules
@@ -51,11 +51,11 @@ These variables have intelligent defaults and can, in general, be left alone as 
 |||
 -|-
 CI_CACHE_DIR    | cache directory (set and constructed, but essentially unused [* see below])
-CI_DEBUG        | enable helper script debug output; <br> [ "" == false, non-empty == true ]
+CI_DEBUG        | enable helper script debug output; <br> [ "" == `false`, non-empty == `true` ]
 CI_HELPERS      | path of directory containing "helper" scripts
 CI_TEMP_DIR     | working directory
 
-Note that caching can drop the perl install time by about 10% to 20% (approximately 10 secs). Because this is such a small overall time savings and because the available cache size, at 1GB *total* across *all projects*, is too small to hold the multiple perl downloads, caching remains unused.
+Note that caching can drop the perl install time by about 10% to 20% (approximately 10 secs). Because this is such a small overall time savings and because the available cache size, at 1GB total across all projects, is too small to hold the multiple perl downloads, caching remains unused.
 
 <a/>ref: <https://www.appveyor.com/docs/build-cache/#cache-size-beta>
 
