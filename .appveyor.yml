@@ -56,7 +56,7 @@ cache:
 #   - '%CI_CACHE_DIR% -> .appveyor.yml'
 
 install:
-  - ps: ;"[{0:HH:mm:ss}].install" -f $($mark = get-date; $mark)
+  - ps: ; write-host $("[{0:HH:mm:ss}].install" -f $($mark = get-date; $mark)) -f darkgray
   # ensure CWD is project main directory
   - cd "%APPVEYOR_BUILD_FOLDER%"
   # perform any special preparation (optional; distribution specific)
@@ -74,12 +74,12 @@ install:
   - if NOT DEFINED CI_HELPER_REPO ( set "CI_HELPER_REPO=https://github.com/rivy/CI.AppVeyor.helpers-perl.git" )
   - if NOT DEFINED CI_HELPER_BRANCH ( set "CI_HELPER_BRANCH=stable" )
   # find / download helpers
-  - ps: ;"[{0:HH:mm:ss}].install ... helpers" -f $($mark_sub = get-date; $mark_sub)
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (helpers)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   # * use "vendored" copy if present
   - ps: if ( ! $env:CI_HELPERS -and (test-path ".appveyor_bin") ) { $env:CI_HELPERS=[IO.Path]::GetFullPath(".appveyor_bin") ; "[{0:HH:mm:ss}].install ... helpers ... (vendored)" -f $(get-date) }
   # * clone/download helpers from repo if needed
   - ps: if ( ! $env:CI_HELPERS ) { $repo_path = $( mkdir "${env:CI_TEMP_DIR}\helpers" ).Fullname ; $git_cmd = "git clone ${env:CI_HELPER_REPO} `"${repo_path}`" -b ${env:CI_HELPER_BRANCH} 2>&1"; write-host "``${git_cmd}``"; & 'CMD' @( '/c', $git_cmd ) ; $env:CI_HELPERS = "${repo_path}\.appveyor_bin" }
-  - ps: ;"[{0:HH:mm:ss}].install ... helpers ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (helpers) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   # resolve requested coverage with needed configuration
   - ps: . "${env:CI_HELPERS}\install.evaluate-coverage.ps1"
   ##
@@ -94,10 +94,10 @@ install:
   # * ref: <https://github.com/appveyor/ci/issues/1606>[`@`](https://archive.is/RVpnF)
   - if DEFINED APPVEYOR_REPO_BRANCH if /I "%APPVEYOR_REPO_SCM%"=="git" ( git checkout "%APPVEYOR_REPO_BRANCH%" & git reset --hard "%APPVEYOR_REPO_COMMIT%" )
   # install perl (strawberry variant) + version verification
-  - ps: ;"[{0:HH:mm:ss}].install ... perl" -f $($mark_sub = get-date; $mark_sub)
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (perl)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   - call "%CI_HELPERS%\install.install-perl.BAT"
   - perl -V
-  - ps: ;"[{0:HH:mm:ss}].install ... perl ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (perl) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   # determine build tooling
   - if NOT DEFINED DIST_TOOLING if EXIST "Build.PL" ( set "DIST_TOOLING=build" )
   - if NOT DEFINED DIST_TOOLING if EXIST "Makefile.PL" ( set "DIST_TOOLING=make" )
@@ -106,18 +106,18 @@ install:
   # setup testing method/options and test files
   - ps: . "${env:CI_HELPERS}\install.setup-testing.ps1"
   # distribution prep prior to the build/make process (ie, build dependencies and OS_unsupported check)
-  - ps: ;"[{0:HH:mm:ss}].install ... distribution requirements" -f $($mark_sub = get-date; $mark_sub)
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   - call "%CI_HELPERS%\install.setup-dist.BAT"
-  - ps: ;"[{0:HH:mm:ss}].install ... distribution requirements ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   # coverage prep
-  - ps: ;"[{0:HH:mm:ss}].install ... coverage" -f $($mark_sub = get-date; $mark_sub)
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (coverage)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   - ps: . "${env:CI_HELPERS}\install.setup-coverage.ps1"
-  - ps: ;"[{0:HH:mm:ss}].install ... coverage ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (coverage) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   #
-  - ps: ;"[{0:HH:mm:ss}].install ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)
+  - ps: ; write-host $("[{0:HH:mm:ss}].install ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 before_build:
-  - ps: ;"[{0:HH:mm:ss}].before_build" -f $($mark = get-date; $mark)
+  - ps: ; write-host $("[{0:HH:mm:ss}].before_build" -f $($mark = get-date; $mark)) -f darkgray
   # ensure CWD is project main directory
   - cd "%APPVEYOR_BUILD_FOLDER%"
   # * for non-COVERAGE builds, enable parallel processing (COVERAGE builds need sequential, correctly interleaved, output to avoid warnings)
@@ -132,23 +132,23 @@ before_build:
   # show final build-related environment variables
   - call "%CI_HELPERS%\log-env.BAT"
   #
-  - ps: ;"[{0:HH:mm:ss}].before_build ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)
+  - ps: ; write-host $("[{0:HH:mm:ss}].before_build ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 build_script:
-  - ps: ;"[{0:HH:mm:ss}].build" -f $($mark = get-date; $mark)
+  - ps: ; write-host $("[{0:HH:mm:ss}].build" -f $($mark = get-date; $mark)) -f darkgray
   - call "%CI_HELPERS%\build.dist.BAT"
-  - ps: ;"[{0:HH:mm:ss}].build ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)
+  - ps: ; write-host $("[{0:HH:mm:ss}].build ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 test_script:
-  - ps: ;"[{0:HH:mm:ss}].test [``$(@(${env:TEST_METHOD},${env:TEST_FILES}) -ne $null -join ' ')``]" -f $($mark = get-date; $mark)
+  - ps: ; write-host $("[{0:HH:mm:ss}].test [``$(@(${env:TEST_METHOD},${env:TEST_FILES}) -ne $null -join ' ')``]" -f $($mark = get-date; $mark)) -f darkgray
   - call %TEST_METHOD% %TEST_FILES%
-  - ps: ;"[{0:HH:mm:ss}].test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)
+  - ps: ; write-host $("[{0:HH:mm:ss}].test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 after_test:
-  - ps: ;"[{0:HH:mm:ss}].after_test" -f $($mark = get-date; $mark)
+  - ps: ; write-host $("[{0:HH:mm:ss}].after_test" -f $($mark = get-date; $mark)) -f darkgray
   # reporting
   # * report any code coverage information
   - ps: if (-not $env:OS_unsupported -and $env:COVERAGE) { $env:COVERAGE.split() | foreach { CMD /c "cover -report $_ 2>&1" } }
-  - ps: ;"[{0:HH:mm:ss}].after_test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)
+  - ps: ; write-host $("[{0:HH:mm:ss}].after_test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
   # end with a prominent "unsupported" notice/warning, when needed
   - ps: if ($env:OS_unsupported) { write-host -f magenta "WARN:` OS unsupported" }
