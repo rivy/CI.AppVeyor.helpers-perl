@@ -81,7 +81,7 @@ install:
   # * use "vendored" copy if present
   - ps: if ( ! $env:CI_HELPERS -and (test-path ".appveyor_bin") ) { $env:CI_HELPERS=[IO.Path]::GetFullPath(".appveyor_bin") ; "[{0:HH:mm:ss}].install ... helpers ... (vendored)" -f $(get-date) }
   # * clone/download helpers from repo if needed
-  - ps: if ( ! $env:CI_HELPERS ) { $repo_path = $( mkdir "${env:CI_TEMP_DIR}\helpers" ).Fullname ; $git_cmd = "git clone ${env:CI_HELPER_REPO} `"${repo_path}`" -b ${env:CI_HELPER_BRANCH} 2>&1"; write-host "``${git_cmd}``"; & 'CMD' @( '/c', $git_cmd ) ; $env:CI_HELPERS = "${repo_path}\.appveyor_bin" }
+  - ps: if ( ! $env:CI_HELPERS ) { $repo_path = $( mkdir "${env:CI_TEMP_DIR}\helpers" ).Fullname ; $git_cmd = "git clone ${env:CI_HELPER_REPO} `"${repo_path}`" -b ${env:CI_HELPER_BRANCH} 2>&1" ; write-host "``${git_cmd}``" ; & 'CMD' @( '/c', $git_cmd ) ; $err = $LASTEXITCODE ; $env:CI_HELPERS = "${repo_path}\.appveyor_bin" ; if ($err -ne 0) { exit -1 } ; }
   - ps: ; write-host $("[{0:HH:mm:ss}].install (helpers) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   # resolve requested coverage with needed configuration
   - ps: . "${env:CI_HELPERS}\install.evaluate-coverage.ps1"
