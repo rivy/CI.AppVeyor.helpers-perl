@@ -13,6 +13,10 @@ branches:
 
 skip_tags: true     ## do not build on tags
 
+matrix:
+  allow_failures:
+    - CI_HELPER_BRANCH: canary
+
 environment:
   matrix:
     - Perl_VERSION: "latest"
@@ -28,6 +32,8 @@ environment:
     - Perl_VERSION: "5.10"
     - Perl_VERSION: "5.8"
     - Perl_VERSION: "5.8.8"
+    - Perl_VERSION: "latest"
+      CI_HELPER_BRANCH: "canary"
   global:
     AUTOMATED_TESTING: 1
     CI_CACHE_DIR: C:\cache
