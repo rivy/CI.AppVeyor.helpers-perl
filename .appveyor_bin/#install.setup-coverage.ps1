@@ -2,7 +2,7 @@
 if ( $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 if ( ! $env:CI_HELPERS ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
 
-if (-not $env:OS_unsupported -and $env:COVERAGE) {
+if (-not $env:CI_SKIP -and -not $env:OS_unsupported -and $env:COVERAGE) {
     # install coverage support
     & "${env:CI_HELPERS}\cpanm-mods_only.BAT" @( '--no-interactive', '--no-man-pages', '--notest', '--quiet', '--skip-satisfied', 'Devel::Cover' )
     ($env:COVERAGE).split() | foreach {
