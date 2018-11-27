@@ -6,6 +6,8 @@ set _CPAN_VERBOSITY=--quiet
 if DEFINED CI_DEBUG ( set _CPAN_VERBOSITY=--verbose )
 if NOT DEFINED CI_HELPERS set "CI_HELPERS=%~dp0"
 
+if DEFINED OS_unsupported ( echo INFO: setup not done ^(OS unsupported^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+
 if DEFINED DIST_SUPPRESS_DEPS if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo INFO: skipping dependency discovery/installation [DIST_SUPPRESS_DEPS=%DIST_SUPPRESS_DEPS%] & goto :_check_OS_unsupported_ )
 if NOT DEFINED DIST_TOOLING if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo INFO: skipping dependency discovery/installation for non-build/make distribution & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
