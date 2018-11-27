@@ -2,7 +2,7 @@
 if DEFINED CI_DEBUG ( echo on )
 set "ERRORLEVEL="
 
-if DEFINED OS_unsupported ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+if DEFINED OS_unsupported ( echo ^(OS unsupported^) testing not done & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 echo [`%TEST_METHOD% %TEST_FILES%`] & call %TEST_METHOD% %TEST_FILES%
 
