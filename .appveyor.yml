@@ -127,7 +127,7 @@ install:
   - ps: ; write-host $("[{0:HH:mm:ss}].install ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 before_build:
-  - ps: ; write-host $("[{0:HH:mm:ss}].before_build" -f $($mark = get-date; $mark)) -f darkgray
+  - ps: ; write-host $("[{0:HH:mm:ss}].build.before_build" -f $($mark = get-date; $mark)) -f darkgray
   # ensure CWD is project main directory
   - cd "%APPVEYOR_BUILD_FOLDER%"
   # * for non-COVERAGE builds, enable parallel processing (COVERAGE builds need sequential, correctly interleaved, output to avoid warnings)
@@ -142,23 +142,23 @@ before_build:
   # show final build-related environment variables
   - call "%CI_HELPERS%\log.env.BAT"
   #
-  - ps: ; write-host $("[{0:HH:mm:ss}].before_build ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
+  - ps: ; write-host $("[{0:HH:mm:ss}].build.before_build ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 build_script:
-  - ps: ; write-host $("[{0:HH:mm:ss}].build" -f $($mark = get-date; $mark)) -f darkgray
+  - ps: ; write-host $("[{0:HH:mm:ss}].build.build_script" -f $($mark = get-date; $mark)) -f darkgray
   - call "%CI_HELPERS%\#build-build_script.BAT"
-  - ps: ; write-host $("[{0:HH:mm:ss}].build ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
+  - ps: ; write-host $("[{0:HH:mm:ss}].build.build_script ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 test_script:
-  - ps: ; write-host $("[{0:HH:mm:ss}].test" -f $($mark = get-date; $mark)) -f darkgray
+  - ps: ; write-host $("[{0:HH:mm:ss}].test.test_script" -f $($mark = get-date; $mark)) -f darkgray
   - call "%CI_HELPERS%\#test-test_script.BAT"
-  - ps: ; write-host $("[{0:HH:mm:ss}].test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
+  - ps: ; write-host $("[{0:HH:mm:ss}].test.test_script ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 after_test:
-  - ps: ; write-host $("[{0:HH:mm:ss}].after_test" -f $($mark = get-date; $mark)) -f darkgray
+  - ps: ; write-host $("[{0:HH:mm:ss}].test.after_test" -f $($mark = get-date; $mark)) -f darkgray
   # reporting
   # * report any code coverage information
   - ps: if (-not $env:OS_unsupported -and $env:COVERAGE) { $env:COVERAGE.split() | foreach { CMD /c "cover -report $_ 2>&1" } }
-  - ps: ; write-host $("[{0:HH:mm:ss}].after_test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
+  - ps: ; write-host $("[{0:HH:mm:ss}].test.after_test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
   # end with a prominent "unsupported" notice/warning, when needed
   - ps: if ($env:OS_unsupported) { write-host -f magenta "WARN:` OS unsupported" }
