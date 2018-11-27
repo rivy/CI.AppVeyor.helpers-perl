@@ -54,6 +54,7 @@ CI_CACHE_DIR    | cache directory (set and constructed, but essentially unused [
 CI_DEBUG        | enable helper script debug output; <br> [ "" == `false`, non-empty == `true` ]
 CI_HELPERS      | path of directory containing "helper" scripts
 CI_TEMP_DIR     | working directory
+OS_unsupported  | signals 'OS unsupported'; skips job actions (with a terminal "OS unsupported" warning)
 
 Note that caching can drop the perl install time by about 10% to 20% (approximately 10 secs). Because this is such a small overall time savings and because the available cache size, at 1GB total across all projects, is too small to hold the multiple perl downloads, caching remains unused.
 
