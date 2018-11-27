@@ -1,4 +1,4 @@
-# highlight any non-default environment vars
+# highlight any non-default (ie, non-null) environment vars (from the set of configuration vars)
 # ref: http://www.powertheshell.com/input_psv3 @@ https://archive.is/D7z8m
 # ref: https://kevinmarquette.github.io/2016-11-06-powershell-hashtable-everything-you-wanted-to-know-about @@ https://archive.is/Ln6cg
 
@@ -11,11 +11,14 @@
   $data_a |% { $data[$_.key]=$_.value }
 
   $vars = @(
+    # * configuration environment variables expected to be null
+    # 'AUTOMATED_TESTING',
     'AUTHOR_TESTING', 'RELEASE_TESTING',
     'TEST_ALL', 'TEST_AUTHOR', 'TEST_RELEASE',
     'COVERAGE',
-    'CI_CACHE_DIR',
+    # 'CI_CACHE_DIR',
     'CI_DEBUG',
+    # 'CI_HELPER_API_VERSION',
     'CI_HELPER_BRANCH', 'CI_HELPER_REPO', 'CI_HELPERS',
     'CI_TEMP_DIR',
     'CI_SKIP', 'CI_SKIP_TEST',
