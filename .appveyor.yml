@@ -149,8 +149,8 @@ build_script:
   - ps: ; write-host $("[{0:HH:mm:ss}].build ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 test_script:
-  - ps: ; write-host $("[{0:HH:mm:ss}].test [``$(@(${env:TEST_METHOD},${env:TEST_FILES}) -ne $null -join ' ')``]" -f $($mark = get-date; $mark)) -f darkgray
-  - call %TEST_METHOD% %TEST_FILES%
+  - ps: ; write-host $("[{0:HH:mm:ss}].test" -f $($mark = get-date; $mark)) -f darkgray
+  - call "%CI_HELPERS%\#test-test_script.BAT"
   - ps: ; write-host $("[{0:HH:mm:ss}].test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 after_test:
