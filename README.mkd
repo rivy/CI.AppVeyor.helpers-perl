@@ -15,7 +15,7 @@ This repository contains a complete [AppVeyor CI](https://appveyor.com) configur
 > 1. Enable "Skip branches without appveyor.yml" (located within the "General" section of the AppVeyor project settings).
 > 2. Enable code coverage reports ...
 >    1. Create a project or projects on [CodeCov](https://codecov.io) and/or [Coveralls](https://coveralls.io) which observes the distribution repository.
->    2. Copy the API token value obtained from the observer project(s) into their respective environment variables (`CODECOV_TOKEN` and/or `COVERALLS_TOKEN`) within the AppVeyor project. These environment variables are set within the "Environment" section of the AppVeyor project settings. Note that the API token values are secrets and should be encrypted (by clicking the lock icon next to each value).
+>    2. Copy the API token value obtained from the observer project(s) into their respective environment variables (`CODECOV_TOKEN` and/or `COVERALLS_TOKEN`) within the AppVeyor project. These environment variables are set within the "Environment" section of the AppVeyor project settings. Note that the API token values are secrets. They should not be placed in the *.appveyor.yml* config file or committed to the repo, in any way. And they should be encrypted within the AppVeyor project settings tab (by clicking the lock icon next to each value).
 
 ## The Details
 
@@ -23,11 +23,15 @@ This repository contains a complete [AppVeyor CI](https://appveyor.com) configur
 
 *.appveyor.yml* is a single file which, when added into a perl distribution, will add the ability to test and analyze the distribution using AppVeyor CI.
 
-If either *Build.PL* or *Makefile.PL* is present in the distribution main directory, the module will be automatically built prior to testing, using the standard perl build or make idiom. And testing will be done with the respective usual idiom (either `perl Build test` or `%make% test`), with `prove` as a fall-back for distributions without build tooling (eg, many `dzil` packages).
+If either *Build.PL* or *Makefile.PL* is present in the distribution main directory, the module will be automatically built prior to testing, using the standard perl build or make idiom. Testing will then be done with the respective usual idiom (either `perl Build test` or `%make% test`), with `prove` as a fall-back for distributions without the traditional build tooling (eg, many `dzil` packages).
 
-Alternate build and test methods are possible via the use of configuration variables (detailed below).
+Distributions which lack both *Build.PL* and *Makefile.PL*, but can be tested without non-CORE dependencies (eg, some CORE modules), should work "out-of-the-box", using the `prove` fallback method. The DIST_EXTRA_DEPS configuration variable (see below) can be also used to add any required modules for `prove` testing.
 
-#### *.appveyor.yml* configuration variables
+Alternate build and test methods are also possible via the use of configuration variables (detailed below).
+
+Notably, there is no direct support for `dzil` building and testing. Support may be added in the future, but the current `dzil` module ecosystem (as of 2018-11) has many dependencies which won't cleanly install on Win32 environments. Until better Win32 support is available for direct `dzil` building and testing, the fallback, `prove`, testing combined with the use of DIST_EXTRA_DEPS (for testing dependencies) can be a workable solution. Alternatively, the `Dist::Zilla::Plugin::MakeMaker` module could be used by authors to generate an ExtUtils::MakeMaker-compatible distribution for storage in its repository.
+
+#### *.appveyor.yml* ~ configuration variables
 
 |||
 -|-
@@ -35,10 +39,11 @@ CI_HELPER_API_VERSION | API version (the expected/requested helper API version);
 CI_HELPER_BRANCH      | helper script repository branch to use; <br> "" => auto-set, valid alternates are [ "stable" (the default), "canary", BRANCH or TAG ]
 CI_HELPER_REPO        | helper script repository to use; <br> "" => auto-set; allows easier use of alternate helper scripts (ie, alternate forks)
 COVERAGE              | requested coverage types; <br> "" => no coverage requested; may include [ "CodeCov", "Coveralls" ], space separated, character case is significant
-DEVEL_COVER_OPTIONS   | options for `cover`; <br> "" => auto-set, value determined by DIST_TOOLING; quoted whitespace (eg, " ") is an empty/neutral setting which also blocks auto-set
-DIST_EXTRA_DEPS       | additional required/requested dependencies for building and/or testing
+DEVEL_COVER_OPTIONS   | options for `cover`; <br> "" => auto-set, value determined by DIST_TOOLING; quoted whitespace is an empty/neutral setting which also blocks auto-set
+DIST_EXTRA_DEPS       | additional required/requested dependencies for building and/or testing (listed as `cpanm`-compatible arguments, eg, `Test::Differences URI~1.000`)
 DIST_SUPPRESS_DEPS    | suppress discovery and installation of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS); <br> [ "" == `false`, non-empty == `true` ] <br> `true` can be useful for CORE modules
 DIST_TOOLING          | build tooling category; <br> [ "build", "make" ] <br> "" => auto-set based on existence of *Build.PL* and/or *Makefile.PL*
+Perl_VERSION          | Perl version to use for testing
 TEST_METHOD           | testing command/method; <br> "" => auto-set based on DIST_TOOLING (`perl Build test`, `%make% test`, or `prove -bl`)
 TEST_FILES            | specific test files to use; <br> "" => auto-set to "" for build/make distributions, otherwise "t" or "t xt" depending on AUTHOR_TESTING and/or RELEASE_TESTING and directory existence
 
@@ -46,7 +51,21 @@ These variables have intelligent defaults and can, in general, be left alone as 
 
 `CI_HELPER_BRANCH` can be used to select between frequent helper updates (eg, "canary"), more stable code (eg, "stable" [the default]), or invariant (using a release TAG). Generally, from most to least stable ... [ "vendoring" (see below) > TAG > stable > canary > BRANCH ]. By definition, code updates and changes to the helper scripts are applied in the inverse order of "stability".
 
-###### *.appveyor.yml* utility variables
+`Perl_VERSION` is obviously used to select between various perl versions for testing. Shorthand, "generic" versions can be used (eg, `5.8`, `5.16`, ...) and, for versions in the "known" set, will be expanded to an appropriate full version. Current "generic" and "known" versions can be seen in the [*#install.install-perl.BAT*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/.appveyor_bin/%23install.install-perl.BAT) script (located in the [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin) directory). Additionally, these "known" versions are available via mirror and will be downloaded automatically whenever the main StrawberryPerl source site is unavailable (see [strawberryperl.com/issues#16](https://github.com/StrawberryPerl/strawberryperl.com/issues/16), [strawberryperl.com/issues#10](https://github.com/StrawberryPerl/strawberryperl.com/issues/10)).
+
+##### *.appveyor.yml* ~ common additional configuration variables
+
+|||
+-|-
+AUTHOR_TESTING  | enable "author" tests; <br> [ "" == `false`, non-empty == `true` ]
+RELEASE_TESTING | enable "release" tests; <br> [ "" == `false`, non-empty == `true` ]
+TEST_ALL        | enable all tests; <br> [ "" == `false`, non-empty == `true` ]
+TEST_AUTHOR     | enable "author" tests; <br> [ "" == `false`, non-empty == `true` ]
+TEST_RELEASE    | enable "release" tests; <br> [ "" == `false`, non-empty == `true` ]
+
+The above table lists some commonly used additional configuration variables and their usual respective definition / action. But the true effect of these variables will be defined by the author's testing design and usually only matters to the author. If defined, these variables will be listed in the build log.
+
+###### *.appveyor.yml* ~ utility variables
 
 |||
 -|-
