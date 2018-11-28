@@ -160,5 +160,8 @@ after_test:
   # * report any code coverage information
   - ps: if (-not $env:OS_unsupported -and $env:COVERAGE) { $env:COVERAGE.split() | foreach { CMD /c "cover -report $_ 2>&1" } }
   - ps: ; write-host $("[{0:HH:mm:ss}].test.after_test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
-  # end with a prominent "unsupported" notice/warning, when needed
+  # end with any informational or warning messages, if needed
+  - ps: if ($env:CI_SKIP) { write-host -f magenta "INFO:` CI_SKIP enabled" ; Add-AppveyorMessage -Message "CI_SKIP enabled" -Category Info }
+  - ps: if ($env:CI_SKIP_TEST) { write-host -f magenta "INFO:` CI_SKIP_TEST enabled" ; Add-AppveyorMessage -Message "CI_SKIP_TEST enabled" -Category Info }
+  # * prominent "unsupported" warning
   - ps: if ($env:OS_unsupported) { write-host -f magenta "WARN:` OS unsupported" ; Add-AppveyorMessage -Message "OS unsupported" -Category Warning }
