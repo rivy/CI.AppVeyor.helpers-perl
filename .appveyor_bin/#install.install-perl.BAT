@@ -57,8 +57,8 @@ if /i not "%perl_version%" == "latest" ( set "cinst_options=%cinst_options% --ve
 
 if not defined perl_download (
   echo|set /p OUTPUT="(%perl_version%; via Chocolatey [`cinst %cinst_options% StrawberryPerl`]) ... "
-  call choco config set cacheLocation "%_DL_DIR%" >NUL
-  call cinst %cinst_options% StrawberryPerl | rem # script fails here if STDOUT redirected to NUL [AppVeyor bug]
+  call choco config set cacheLocation "%_DL_DIR%"
+  call cinst %cinst_options% StrawberryPerl
 ) else (
   echo|set /p OUTPUT="(%perl_version%; via direct download) ... "
   call curl -# -L "%perl_download%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
