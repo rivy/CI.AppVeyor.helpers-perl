@@ -31,12 +31,13 @@ if "%perl_version%"=="5.10.1.1" ( set "perl_download=http://strawberryperl.com/d
 if "%perl_version%"=="5.12.1.0" ( set "perl_download=http://strawberryperl.com/download/5.12.1.0/strawberry-perl-5.12.1.0.zip" )
 if "%perl_version%"=="5.14.4.1" ( set "perl_download=http://strawberryperl.com/download/5.14.4.1/strawberry-perl-5.14.4.1-64bit.zip" )
 if "%perl_version%"=="5.16.3.1" ( set "perl_download=http://strawberryperl.com/download/5.16.3.1/strawberry-perl-5.16.3.1-64bit.zip" )
-REM if "%perl_version%"=="5.18.4.1" ( set "perl_download=http://strawberryperl.com/download/5.18.4.1/strawberry-perl-5.18.4.1-64bit.zip" )
-REM if "%perl_version%"=="5.20.3.3" ( set "perl_download=http://strawberryperl.com/download/5.20.3.3/strawberry-perl-5.20.3.3-64bit.zip" )
-REM if "%perl_version%"=="5.22.3.1" ( set "perl_download=http://strawberryperl.com/download/5.22.3.1/strawberry-perl-5.22.3.1-64bit.zip" )
-REM if "%perl_version%"=="5.24.4.1" ( set "perl_download=http://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.4.1-64bit.zip" )
-REM if "%perl_version%"=="5.26.2.1" ( set "perl_download=http://strawberryperl.com/download/5.26.2.1/strawberry-perl-5.26.2.1-64bit.zip" )
-REM if "%perl_version%"=="5.28.0.1" ( set "perl_download=http://strawberryperl.com/download/5.28.0.1/strawberry-perl-5.28.0.1-64bit.zip" )
+:: * perl versions after this are available via `cinst`
+if "%perl_version%"=="5.18.4.1" ( set "perl_download=http://strawberryperl.com/download/5.18.4.1/strawberry-perl-5.18.4.1-64bit.zip" )
+if "%perl_version%"=="5.20.3.3" ( set "perl_download=http://strawberryperl.com/download/5.20.3.3/strawberry-perl-5.20.3.3-64bit.zip" )
+if "%perl_version%"=="5.22.3.1" ( set "perl_download=http://strawberryperl.com/download/5.22.3.1/strawberry-perl-5.22.3.1-64bit.zip" )
+if "%perl_version%"=="5.24.4.1" ( set "perl_download=http://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.4.1-64bit.zip" )
+if "%perl_version%"=="5.26.2.1" ( set "perl_download=http://strawberryperl.com/download/5.26.2.1/strawberry-perl-5.26.2.1-64bit.zip" )
+if "%perl_version%"=="5.28.0.1" ( set "perl_download=http://strawberryperl.com/download/5.28.0.1/strawberry-perl-5.28.0.1-64bit.zip" )
 
 :: ## setup download area (CI_CACHE_DIR availability is not assumed)
 
