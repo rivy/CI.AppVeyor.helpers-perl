@@ -11,6 +11,7 @@ if not defined perl_version ( set "perl_version=latest" )
 
 :: ## refine "generic" perl versions
 if "%perl_version%"=="5.8.8" ( set "perl_version=5.8.8.4" )
+if "%perl_version%"=="5.8.9" ( set "perl_version=5.8.9.5" )
 if "%perl_version%"=="5.8"   ( set "perl_version=5.8.9.5" )
 if "%perl_version%"=="5.10"  ( set "perl_version=5.10.1.1" )
 if "%perl_version%"=="5.12"  ( set "perl_version=5.12.1.0" )
