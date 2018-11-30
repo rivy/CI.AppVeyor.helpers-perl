@@ -74,7 +74,8 @@ if defined direct_download_only goto :install_via_cinst_DONE
 set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; via Chocolatey [`cinst %cinst_options% StrawberryPerl`]) ... "
 call choco config set cacheLocation "%_DL_DIR%" >NUL
-call cinst %cinst_options% StrawberryPerl | rem # script fails here if STDOUT redirected to NUL [AppVeyor bug]
+call cinst %cinst_options% StrawberryPerl
+:: ## | rem # script fails here if STDOUT redirected to NUL [AppVeyor bug]
 if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: `cinst` of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.cinst" )
 :install_via_cinst_DONE
 
@@ -85,7 +86,8 @@ if defined install_complete goto :install_via_direct_download_DONE
 if not defined perl_download_URI goto :install_via_direct_download_DONE
 set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; via direct download) ... "
-call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
+REM call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
+call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" && call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry
 if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: direct download of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.direct" )
 :install_via_direct_download_DONE
 
