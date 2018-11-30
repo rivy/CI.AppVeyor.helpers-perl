@@ -50,6 +50,7 @@ if "%perl_version%"=="5.16.3.1" ( set "direct_download_only=true" )
 :: * perl versions after this are available via `cinst`
 
 call set "perl_download_URI=%%_perl_download_URI_%perl_version%%%"
+call set "perl_download_mirror_URI=%_perl_download_URI_:http://strawberryperl.com/download/=http://mirror.dom/folder/%"
 
 :: ## setup download area (CI_CACHE_DIR availability is not assumed)
 
@@ -74,9 +75,7 @@ if defined direct_download_only goto :install_via_cinst_DONE
 set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; via Chocolatey [`cinst %cinst_options% StrawberryPerl`]) ... "
 call choco config set cacheLocation "%_DL_DIR%" >NUL
-echo call cinst %cinst_options% StrawberryPerl
-call cinst %cinst_options% StrawberryPerl
-:: ## | rem # script fails here if STDOUT redirected to NUL [AppVeyor bug]
+call cinst %cinst_options% StrawberryPerl | rem # script fails here if STDOUT redirected to NUL [AppVeyor bug]
 if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: `cinst` of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.cinst" )
 :install_via_cinst_DONE
 
@@ -87,9 +86,7 @@ if defined install_complete goto :install_via_direct_download_DONE
 if not defined perl_download_URI goto :install_via_direct_download_DONE
 set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; via direct download) ... "
-REM call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
-echo call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" && echo call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry
-call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" && call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry
+call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
 if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: direct download of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.direct" )
 :install_via_direct_download_DONE
 
