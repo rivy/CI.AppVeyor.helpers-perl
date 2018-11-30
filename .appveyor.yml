@@ -16,6 +16,7 @@ skip_tags: true     ## do not build on tags
 matrix:
   allow_failures:
     - CI_HELPER_BRANCH: canary
+    - Perl_VERSION: "5.8.8" ## allow perl v5.8.8 failures; (v5.8.8 is problematic for many projects)
 
 environment:
   matrix:
@@ -30,7 +31,7 @@ environment:
     - Perl_VERSION: "5.14"
     - Perl_VERSION: "5.12"
     - Perl_VERSION: "5.10"
-    - Perl_VERSION: "5.8"
+    - Perl_VERSION: "5.8.9"
     - Perl_VERSION: "5.8.8"
     - Perl_VERSION: "latest"
       CI_HELPER_BRANCH: "canary"
@@ -71,7 +72,7 @@ install:
   - if EXIST ".appveyor_init.BAT" ( call .appveyor_init.BAT )
   - ps: if ( test-path ".appveyor_init.PS1" ) { . ".\.appveyor_init.PS1" }
   # save current-point-in-time environment (for later logging of environment variable overrides)
-  - ps: $base_env = @(get-childitem env:)
+  - ps: $baseline_env = @(get-childitem env:)
   # create a working area
   - ps: if ( ! $env:CI_TEMP_DIR ) { $env:CI_TEMP_DIR = "${env:TEMP}\${env:APPVEYOR_JOB_ID}" ; mkdir -force $env:CI_TEMP_DIR | out-null }
   # create cache area, if missing
@@ -93,8 +94,8 @@ install:
   # resolve requested coverage with needed configuration
   - ps: . "${env:CI_HELPERS}\#install.evaluate-coverage.ps1"
   ##
-  # highlight any overrides
-  - ps: $base_env | & "${env:CI_HELPERS}\log.env-overrides.ps1"
+  # highlight any overrides within baseline environment
+  - ps: $baseline_env | & "${env:CI_HELPERS}\log.env-overrides.ps1"
   ##
   # move "C:\mingw" to avoid cross library linking (a problem with older perl versions, breaking dll compilation with "/mingw/lib/dllcrt2.o:(.text+0xd1): undefined reference to `__dyn_tls_init_callback'")
   # * only truly needed for modules containing XS compilation, but ok for all modules
@@ -111,6 +112,8 @@ install:
   # determine build tooling
   - if NOT DEFINED DIST_TOOLING if EXIST "Build.PL" ( set "DIST_TOOLING=build" )
   - if NOT DEFINED DIST_TOOLING if EXIST "Makefile.PL" ( set "DIST_TOOLING=make" )
+  # * warn about buggy early Module::Builds for "build" tooling
+  - ps: if ( $env:DIST_TOOLING -ieq 'build' -and $($_=$(perl -MModule::Build -e "print Module::Build->VERSION()").Replace('_',''); $_ -lt 0.421) ) { write-host "WARN using buggy early version of Module::Build ($_); consider requiring later version" }
   # setup DEVEL_COVER_OPTIONS, if needed
   - ps: if (! $env:DEVEL_COVER_OPTIONS) { . "${env:CI_HELPERS}\#install.setup-cover-options.ps1" }
   # setup testing method/options and test files
@@ -118,6 +121,7 @@ install:
   # distribution prep prior to the build/make process (ie, build dependencies and OS_unsupported check)
   - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   - call "%CI_HELPERS%\#install.setup-dist.BAT"
+  - ps: if ( $env:DIST_TOOLING -ieq 'build' -and $($_=$(perl -MModule::Build -e "print Module::Build->VERSION()").Replace("_",""); $_ -lt 0.421) ) { write-host $("WARN:"+"using flawed early version of Module::Build ($_); consider requiring later version (>= 0.421)") -f yellow }
   - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   # coverage prep
   - ps: ; write-host $("[{0:HH:mm:ss}].install (coverage)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
