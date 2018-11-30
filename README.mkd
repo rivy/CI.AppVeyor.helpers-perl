@@ -15,7 +15,7 @@ This repository contains a complete [AppVeyor CI](https://appveyor.com) configur
 > 1. Enable "Skip branches without appveyor.yml" (located within the "General" section of the AppVeyor project settings).
 > 2. Enable code coverage reports ...
 >    1. Create a project or projects on [CodeCov](https://codecov.io) and/or [Coveralls](https://coveralls.io) which observes the distribution repository.
->    2. Copy the API token value obtained from the observer project(s) into their respective environment variables (`CODECOV_TOKEN` and/or `COVERALLS_TOKEN`) within the AppVeyor project. These environment variables are set within the "Environment" section of the AppVeyor project settings. Note that the API token values are secrets and should be encrypted (by clicking the lock icon next to each value).
+>    2. Copy the API token value obtained from the observer project(s) into their respective environment variables (`CODECOV_TOKEN` and/or `COVERALLS_TOKEN`) within the AppVeyor project. These environment variables are set within the "Environment" section of the AppVeyor project settings. Note that the API token values are secrets. They should not be placed in the *.appveyor.yml* config file or committed to the repo, in any way. And they should be encrypted within the AppVeyor project settings tab (by clicking the lock icon next to each value).
 
 ## The Details
 
