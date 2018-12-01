@@ -13,47 +13,49 @@ if not defined perl_version ( set "perl_version=latest" )
 if "%perl_version%"=="5.8.8" ( set "perl_version=5.8.8.4" )
 if "%perl_version%"=="5.8.9" ( set "perl_version=5.8.9.5" )
 if "%perl_version%"=="5.8"   ( set "perl_version=5.8.9.5" )
-if "%perl_version%"=="5.10"  ( set "perl_version=5.10.1.1" )
-if "%perl_version%"=="5.12"  ( set "perl_version=5.12.1.0" )
+if "%perl_version%"=="5.10"  ( set "perl_version=5.10.1.2" )
+if "%perl_version%"=="5.12"  ( set "perl_version=5.12.3.0" )
 if "%perl_version%"=="5.14"  ( set "perl_version=5.14.4.1" )
 if "%perl_version%"=="5.16"  ( set "perl_version=5.16.3.1" )
 if "%perl_version%"=="5.18"  ( set "perl_version=5.18.4.1" )
 if "%perl_version%"=="5.20"  ( set "perl_version=5.20.3.3" )
-if "%perl_version%"=="5.22"  ( set "perl_version=5.22.3.1" )
-if "%perl_version%"=="5.24"  ( set "perl_version=5.24.4.1" )
-if "%perl_version%"=="5.26"  ( set "perl_version=5.26.2.1" )
+if "%perl_version%"=="5.22"  ( set "perl_version=5.22.2.1" )
+if "%perl_version%"=="5.24"  ( set "perl_version=5.24.1.1" )
+if "%perl_version%"=="5.26"  ( set "perl_version=5.26.1.1" )
 if "%perl_version%"=="5.28"  ( set "perl_version=5.28.0.1" )
 
+:: ## "known" perl binaries
 :: StrawberryPerl direct download URIs
 set "_perl_download_URI_5.8.8.4=http://strawberryperl.com/download/5.8.8/strawberry-perl-5.8.8.4.zip"
 set "_perl_download_URI_5.8.9.5=http://strawberryperl.com/download/5.8.9/strawberry-perl-5.8.9.5.zip"
-set "_perl_download_URI_5.10.1.1=http://strawberryperl.com/download/5.10.1.1/strawberry-perl-5.10.1.1.zip"
-set "_perl_download_URI_5.12.1.0=http://strawberryperl.com/download/5.12.1.0/strawberry-perl-5.12.1.0.zip"
+set "_perl_download_URI_5.10.1.1=http://strawberryperl.com/download/5.10.1.1/strawberry-perl-5.10.1.2-portable.zip"
+set "_perl_download_URI_5.12.1.0=http://strawberryperl.com/download/5.12.1.0/strawberry-perl-5.12.3.0-portable.zip"
 set "_perl_download_URI_5.14.4.1=http://strawberryperl.com/download/5.14.4.1/strawberry-perl-5.14.4.1-64bit.zip"
 set "_perl_download_URI_5.16.3.1=http://strawberryperl.com/download/5.16.3.1/strawberry-perl-5.16.3.1-64bit.zip"
 :: * perl versions after this are available via `cinst`
 set "_perl_download_URI_5.18.4.1=http://strawberryperl.com/download/5.18.4.1/strawberry-perl-5.18.4.1-64bit.zip"
-set "_perl_download_URI_5.20.3.3=http://strawberryperl.com/download/5.20.3.3/strawberry-perl-5.20.3.3-64bit.zip"
-set "_perl_download_URI_5.22.3.1=http://strawberryperl.com/download/5.22.3.1/strawberry-perl-5.22.3.1-64bit.zip"
-set "_perl_download_URI_5.24.4.1=http://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.4.1-64bit.zip"
-set "_perl_download_URI_5.26.2.1=http://strawberryperl.com/download/5.26.2.1/strawberry-perl-5.26.2.1-64bit.zip"
+set "_perl_download_URI_5.20.3.3=http://strawberryperl.com/download/5.20.3.3/strawberry-perl-5.20.3.3-64bit-portable.zip"
+set "_perl_download_URI_5.22.3.1=http://strawberryperl.com/download/5.22.3.1/strawberry-perl-5.22.2.1-64bit-portable.zip"
+set "_perl_download_URI_5.24.4.1=http://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.1.1-64bit-portable.zip"
+set "_perl_download_URI_5.26.2.1=http://strawberryperl.com/download/5.26.2.1/strawberry-perl-5.26.1.1-64bit-PDL.zip"
 set "_perl_download_URI_5.28.0.1=http://strawberryperl.com/download/5.28.0.1/strawberry-perl-5.28.0.1-64bit.zip"
+set   "_perl_download_URI_latest=http://strawberryperl.com/download/5.28.0.1/strawberry-perl-5.28.0.1-64bit.zip"
 
 :: StrawberryPerl mirror download URIs
-set "_perl_mirror_URI_5.8.8.4=https://github.com/rivy/perl.Perl-Dist-Strawberry/releases/download/2018.12.1/strawberry-perl-5.8.8.4.zip"
-set "_perl_mirror_URI_5.8.9.5=https://github.com/rivy/perl.Perl-Dist-Strawberry/releases/download/2018.12.1/strawberry-perl-5.8.9.5.zip"
-set "_perl_mirror_URI_5.10.1.1=https://github.com/rivy/perl.Perl-Dist-Strawberry/releases/download/2018.12.1/strawberry-perl-5.10.1.2-portable.zip"
-set "_perl_mirror_URI_5.12.1.0=https://github.com/rivy/perl.Perl-Dist-Strawberry/releases/download/2018.12.1/strawberry-perl-5.12.3.0-portable.zip"
+set "_perl_mirror_URI_5.8.8.4=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.8.8.4.zip"
+set "_perl_mirror_URI_5.8.9.5=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.8.9.5.zip"
+set "_perl_mirror_URI_5.10.1.1=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.10.1.2-portable.zip"
+set "_perl_mirror_URI_5.12.1.0=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.12.3.0-portable.zip"
 set "_perl_mirror_URI_5.14.4.1="
 set "_perl_mirror_URI_5.16.3.1="
 :: * perl versions after this are available via `cinst`
 set "_perl_mirror_URI_5.18.4.1="
-set "_perl_mirror_URI_5.20.3.3=https://github.com/rivy/perl.Perl-Dist-Strawberry/releases/download/2018.12.1/strawberry-perl-5.20.3.3-64bit-portable.zip"
-set "_perl_mirror_URI_5.22.3.1=https://github.com/rivy/perl.Perl-Dist-Strawberry/releases/download/2018.12.1/strawberry-perl-5.22.2.1-64bit-portable.zip"
-set "_perl_mirror_URI_5.24.4.1=https://github.com/rivy/perl.Perl-Dist-Strawberry/releases/download/2018.12.1/strawberry-perl-5.24.1.1-64bit-portable.zip"
-set "_perl_mirror_URI_5.26.2.1=https://github.com/rivy/perl.Perl-Dist-Strawberry/releases/download/2018.12.1/strawberry-perl-5.26.1.1-64bit-PDL.zip"
+set "_perl_mirror_URI_5.20.3.3=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.20.3.3-64bit-portable.zip"
+set "_perl_mirror_URI_5.22.3.1=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.22.2.1-64bit-portable.zip"
+set "_perl_mirror_URI_5.24.4.1=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.24.1.1-64bit-portable.zip"
+set "_perl_mirror_URI_5.26.2.1=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.26.1.1-64bit-PDL.zip"
 set "_perl_mirror_URI_5.28.0.1="
-set "_perl_mirror_URI_latest=https://github.com/rivy/perl.Perl-Dist-Strawberry/releases/download/2018.12.1/strawberry-perl-5.26.1.1-64bit-PDL.zip"
+set   "_perl_mirror_URI_latest=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.26.1.1-64bit-PDL.zip"
 
 :: ## determine direct download file (as needed and available [generally only for certain earlier perl versions])
 set "direct_download_only="
@@ -110,8 +112,8 @@ if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: direct download of Perl failed [
 if defined install_complete goto :install_via_mirror_download_DONE
 if not defined perl_mirror_URI goto :install_via_mirror_download_DONE
 set "ERRORLEVEL="
-echo|set /p OUTPUT="(%perl_version%; via direct download) ... "
-call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
+echo|set /p OUTPUT="(%perl_version%; via mirror download) ... "
+call curl -# -L "%perl_mirror_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
 if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: mirror download of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.direct" )
 :install_via_mirror_download_DONE
 
