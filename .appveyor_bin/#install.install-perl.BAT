@@ -106,9 +106,7 @@ if defined install_complete goto :install_via_direct_download_DONE
 if not defined perl_download_URI goto :install_via_direct_download_DONE
 set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; via direct download) ... "
-REM call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && REM call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
-call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip"
-call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry
+call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
 if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: direct download of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.direct" )
 :install_via_direct_download_DONE
 
@@ -118,9 +116,7 @@ if defined install_complete goto :install_via_mirror_download_DONE
 if not defined perl_mirror_URI goto :install_via_mirror_download_DONE
 set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; via mirror download) ... "
-REM call curl -# -L "%perl_mirror_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && REM call 7z -bd x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
-call curl -# -L "%perl_mirror_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip"
-call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry
+call curl -# -L "%perl_mirror_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
 if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: mirror download of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.direct" )
 :install_via_mirror_download_DONE
 
