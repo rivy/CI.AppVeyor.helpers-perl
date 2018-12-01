@@ -43,12 +43,15 @@ DEVEL_COVER_OPTIONS   | options for `cover`; <br> "" => auto-set, value determin
 DIST_EXTRA_DEPS       | additional required/requested dependencies for building and/or testing (listed as `cpanm`-compatible arguments, eg, `Test::Differences URI~1.000`)
 DIST_SUPPRESS_DEPS    | suppress discovery and installation of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS); <br> [ "" == `false`, non-empty == `true` ] <br> `true` can be useful for CORE modules
 DIST_TOOLING          | build tooling category; <br> [ "build", "make" ] <br> "" => auto-set based on existence of *Build.PL* and/or *Makefile.PL*
+Perl_VERSION          | Perl version to use for testing
 TEST_METHOD           | testing command/method; <br> "" => auto-set based on DIST_TOOLING (`perl Build test`, `%make% test`, or `prove -bl`)
 TEST_FILES            | specific test files to use; <br> "" => auto-set to "" for build/make distributions, otherwise "t" or "t xt" depending on AUTHOR_TESTING and/or RELEASE_TESTING and directory existence
 
 These variables have intelligent defaults and can, in general, be left alone as empty strings. Modifications are usually only necessary for special circumstances.
 
 `CI_HELPER_BRANCH` can be used to select between frequent helper updates (eg, "canary"), more stable code (eg, "stable" [the default]), or invariant (using a release TAG). Generally, from most to least stable ... [ "vendoring" (see below) > TAG > stable > canary > BRANCH ]. By definition, code updates and changes to the helper scripts are applied in the inverse order of "stability".
+
+`Perl_VERSION` is obviously used to select between various perl versions for testing. Shorthand, "generic" versions can be used (eg, `5.8`, `5.16`, ...) and, for versions in the "known" set, will be expanded to an appropriate full version. Current "generic" and "known" versions can be seen in the [*#install.install-perl.BAT*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/.appveyor_bin/%23install.install-perl.BAT) script (located in the [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin) directory). Additionally, these "known" versions are available via mirror and will be downloaded automatically whenever the main StrawberryPerl source site is unavailable (see [strawberryperl.com/issues#16](https://github.com/StrawberryPerl/strawberryperl.com/issues/16), [strawberryperl.com/issues#10](https://github.com/StrawberryPerl/strawberryperl.com/issues/10)).
 
 ###### *.appveyor.yml* utility variables
 
