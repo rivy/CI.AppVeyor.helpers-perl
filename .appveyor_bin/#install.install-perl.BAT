@@ -30,14 +30,14 @@ set "_perl_download_URI_5.8.8.4=http://strawberryperl.com/download/5.8.8/strawbe
 set "_perl_download_URI_5.8.9.5=http://strawberryperl.com/download/5.8.9/strawberry-perl-5.8.9.5.zip"
 set "_perl_download_URI_5.10.1.2=http://strawberryperl.com/download/5.10.1.2/strawberry-perl-5.10.1.2-portable.zip"
 set "_perl_download_URI_5.12.3.0=http://strawberryperl.com/download/5.12.3.0/strawberry-perl-5.12.3.0-portable.zip"
-set "_perl_download_URI_5.14.4.1=http://strawberryperl.com/download/5.14.4.1/strawberry-perl-5.14.4.1-64bit-portable.zip"
+set "_perl_download_URI_5.14.4.1=http://strawberryperl.com/download/5.14.4.1/strawberry-perl-5.14.X.X-64bit-portable.zip"
 set "_perl_download_URI_5.16.3.1=http://strawberryperl.com/download/5.16.3.1/strawberry-perl-5.16.3.1-64bit-portable.zip"
 :: * perl versions after this are available via `cinst`
 set "_perl_download_URI_5.18.4.1=http://strawberryperl.com/download/5.18.4.1/strawberry-perl-5.18.4.1-64bit-portable.zip"
 set "_perl_download_URI_5.20.3.3=http://strawberryperl.com/download/5.20.3.3/strawberry-perl-5.20.3.3-64bit-portable.zip"
 set "_perl_download_URI_5.22.3.1=http://strawberryperl.com/download/5.22.3.1/strawberry-perl-5.22.3.1-64bit-portable.zip"
 set "_perl_download_URI_5.24.4.1=http://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.1.1-64bit-portable.zip"
-set "_perl_download_URI_5.26.2.1=http://strawberryperl.com/download/5.26.2.1/strawberry-perl-5.26.1.1-64bit-portable.zip"
+set "_perl_download_URI_5.26.2.1=http://strawberryperl.com/download/5.26.2.1/strawberry-perl-5.26.2.1-64bit-portable.zip"
 set "_perl_download_URI_5.28.0.1=http://strawberryperl.com/download/5.28.0.1/strawberry-perl-5.28.0.1-64bit-portable.zip"
 set "_perl_download_URI_latest=%_perl_download_URI_5.28.0.1%"
 
@@ -89,15 +89,13 @@ if /i not "%perl_version%" == "latest" ( set "cinst_options=%cinst_options% --ve
 
 set "install_complete="
 
-REM if defined CI_DEBUG_PERL_INSTALL if /i not "%CI_DEBUG_PERL_INSTALL%"=="cinst" ( goto :install_via_cinst_DONE )
-
 if defined install_complete goto :install_via_cinst_DONE
 if defined direct_download_only goto :install_via_cinst_DONE
 set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; via Chocolatey [`cinst %cinst_options% StrawberryPerl`]) ... "
 call choco config set cacheLocation "%_DL_DIR%" >NUL
 call cinst %cinst_options% StrawberryPerl | rem # script fails here if STDOUT redirected to NUL [AppVeyor bug]
-if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: `cinst` of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.cinst" )
+if not "%ERRORLEVEL%"=="0" ( echo. & powershell -c write-host "WARN: ``cinst`` of Perl failed [ERRORLEVEL=%ERRORLEVEL%]" -f yellow ) else ( set "install_complete=true.cinst" )
 :install_via_cinst_DONE
 
 if defined CI_DEBUG_PERL_INSTALL ( set "install_complete=" )
@@ -107,7 +105,7 @@ if not defined perl_download_URI goto :install_via_direct_download_DONE
 set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; via direct download from '%perl_download_URI%') ... "
 call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
-if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: direct download of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.direct" )
+if not "%ERRORLEVEL%"=="0" ( echo. & powershell -c write-host "WARN: direct download of Perl failed [ERRORLEVEL=%ERRORLEVEL%]" -f yellow ) else ( set "install_complete=true.direct" )
 :install_via_direct_download_DONE
 
 if defined CI_DEBUG_PERL_INSTALL ( set "install_complete=" )
@@ -117,7 +115,7 @@ if not defined perl_mirror_URI goto :install_via_mirror_download_DONE
 set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; via mirror download from '%perl_mirror_URI%') ... "
 call curl -# -L "%perl_mirror_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
-if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: mirror download of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.direct" )
+if not "%ERRORLEVEL%"=="0" ( echo. & powershell -c write-host "WARN: mirror download of Perl failed [ERRORLEVEL=%ERRORLEVEL%]" -f yellow ) else ( set "install_complete=true.mirror" )
 :install_via_mirror_download_DONE
 
 if not defined install_complete ( echo ERR!: installation of Perl FAILED & goto _undefined_ 2>NUL || CMD /x/d/c exit -1 )
