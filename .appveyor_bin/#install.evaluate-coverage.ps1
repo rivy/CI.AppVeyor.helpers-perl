@@ -13,7 +13,7 @@ if ($env:COVERAGE) {
         if ($val.length -gt 0) {
             $coverage += $_
             write-host "info: '$_' coverage is configured and enabled"
-          } else { write-host -f yellow "info: skipping '$_' coverage (missing '$($_.ToUpper() + '_TOKEN')')" }
+          } else { write-host -f yellow "WARN: skipping '$_' coverage (missing '$($_.ToUpper() + '_TOKEN')')" }
         }
     $env:COVERAGE = $coverage -join " "
     # write-host "env:COVERAGE = $env:COVERAGE"
