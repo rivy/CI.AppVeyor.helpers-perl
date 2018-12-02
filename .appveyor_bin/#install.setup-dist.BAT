@@ -83,6 +83,7 @@ set "_DIST_PREBUILDER="
 
 if DEFINED OS_unsupported ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 if DEFINED DIST_SUPPRESS_DEPS ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+if DEFINED DIST_SUPPRESS_RECS ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 ::# install any further optional dependencies
 echo [%TIME%] ### install recommended modules
