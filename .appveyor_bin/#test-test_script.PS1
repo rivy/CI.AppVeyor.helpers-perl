@@ -14,7 +14,7 @@ if ( $env:CI_SKIP ) {
 } else {
     $test_cmd = @($env:TEST_METHOD, $env:TEST_FILES) -join ' '
     write-host "[``$test_cmd``]"
-    & "$env:TEST_METHOD" @( "$env:TEST_FILES" )
+    & 'CMD' ( '/x/c', "$test_cmd" )
     if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }
 }
 
