@@ -12,7 +12,7 @@ if ( $env:CI_SKIP ) {
 } elseif ( $env:OS_unsupported ) {
     write-host "info: testing not done (OS unsupported)"
 } else {
-    $test_cmd = @($env:TEST_METHOD, $env:TEST_FILES) -join ' '
+    $test_cmd = if ( $env:TEST_FILES ) { @($env:TEST_METHOD, $env:TEST_FILES) -join ' ' } else { $env:TEST_METHOD }
     write-host "[``$test_cmd``]"
     & 'CMD' ( '/x/c', "$test_cmd 2>&1" )
     if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }
