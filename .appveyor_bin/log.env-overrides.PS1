@@ -10,8 +10,8 @@
   $data = @{}
   $data_a |% { $data[$_.key]=$_.value }
 
-  $vars = @(
-    # * configuration environment variables expected to be null
+  $CI_vars = @(
+    # configuration environment variables expected to be null
     'AUTHOR_TESTING', 'RELEASE_TESTING',
     'TEST_ALL', 'TEST_AUTHOR', 'TEST_RELEASE',
     # 'AUTOMATED_TESTING',
@@ -29,13 +29,14 @@
     # 'make',
     'OS_unsupported',
     'PERL5OPT',
-    'TEST_FILES', 'TEST_METHOD'
+    'TEST_FILES', 'TEST_METHOD',
+    @()
     );
 
   $overrides = @();
 
-  #$vars |% { $v = (get-item env:$_ -ea silent).value; if ($v -ne $null) { $overrides += "$_=$v" }}
-  $vars |% { $v = $data[$_]; if ($v -ne $null) { $overrides += "$_=$v" }}
+  #$CI_vars |% { $v = (get-item env:$_ -ea silent).value; if ($v -ne $null) { $overrides += "$_=$v" }}
+  $CI_vars |% { $v = $data[$_]; if ($v -ne $null) { $overrides += "$_=$v" }}
 
   if ( $overrides ) { write-host -fore yellow $($(@("") + $overrides + @("")) -join "`r`n") }
 

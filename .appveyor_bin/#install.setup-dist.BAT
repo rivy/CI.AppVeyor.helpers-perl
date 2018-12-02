@@ -45,10 +45,10 @@ if NOT DEFINED DIST_TOOLING ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 if DEFINED DIST_SUPPRESS_DEPS ( goto :_check_OS_unsupported_ )
 
 ::
-echo [%TIME%] ### # ... HACK for `cpanm` overlooking "test_requires" and "test_recommends"
+echo [%TIME%] ### # HACK for `cpanm` overlooking "test_requires" and "test_recommends"
 ::# note: `cpanm` will sometimes overlook "test_requires" and/or "test_recommends" modules; this bug is reproducible but only occurs for some distributions
 ::# * HACK `cpanm`, creating a faux distribution directory with a minimal "Makefile.PL" and META build information
-echo [%TIME%] ### # ... .... create faux distribution
+echo [%TIME%] ### # .... create faux distribution
 set "_faux_dir=%TEMP%\%APPVEYOR_JOB_ID%\cpanm-rec-hack"
 if EXIST "%_faux_dir%" ( rmdir /s/q "%_faux_dir%" )
 mkdir "%_faux_dir%"
@@ -57,7 +57,7 @@ copy META.* "%_faux_dir%" >NUL 2>&1 || cd . &:: suppress any error
 copy MYMETA.* "%_faux_dir%" >NUL 2>&1 || cd . &:: suppress any error
 pushd "%_faux_dir%"
 echo use ExtUtils::MakeMaker; WriteMakefile(); > Makefile.PL    &:: create minimal Makefile.PL
-echo [%TIME%] ### # ... .... run future `cpanm` within the faux distribution
+echo [%TIME%] ### # .... run `cpanm` from within the faux distribution
 popd
 ::
 
