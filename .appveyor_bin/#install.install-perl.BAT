@@ -2,8 +2,6 @@
 if DEFINED CI_DEBUG ( echo on )
 set "ERRORLEVEL="
 
-powershell -c "write-host '[install perl]' -f green"
-
 :: NOTE: contains some peculiar statement ordering and redirections b/c of AppVeyor bugs when executing BAT/CMD scripts
 
 if DEFINED CI_SKIP ( echo INFO: perl install/config not done ^(CI_SKIP enabled^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
@@ -97,7 +95,7 @@ set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; via Chocolatey [`cinst %cinst_options% StrawberryPerl`]) ... "
 call choco config set cacheLocation "%_DL_DIR%" >NUL
 call cinst %cinst_options% StrawberryPerl | rem # script fails here if STDOUT redirected to NUL [AppVeyor bug]
-if not "%ERRORLEVEL%"=="0" ( echo. & powershell -c write-host "WARN: ``cinst`` of Perl failed [ERRORLEVEL=%ERRORLEVEL%]" -f yellow ) else ( set "install_complete=true.cinst" )
+if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: `cinst` of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.cinst" )
 :install_via_cinst_DONE
 
 if defined CI_DEBUG_PERL_INSTALL ( set "install_complete=" )
@@ -107,7 +105,7 @@ if not defined perl_download_URI goto :install_via_direct_download_DONE
 set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; direct download from '%perl_download_URI%') ... "
 call curl -# -fL "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
-if not "%ERRORLEVEL%"=="0" ( echo. & powershell -c write-host "WARN: direct download of Perl failed [ERRORLEVEL=%ERRORLEVEL%]" -f yellow ) else ( set "install_complete=true.direct" )
+if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: direct download of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.direct" )
 :install_via_direct_download_DONE
 
 if defined CI_DEBUG_PERL_INSTALL ( set "install_complete=" )
@@ -117,7 +115,7 @@ if not defined perl_mirror_URI goto :install_via_mirror_download_DONE
 set "ERRORLEVEL="
 echo|set /p OUTPUT="(%perl_version%; mirror download from '%perl_mirror_URI%') ... "
 call curl -# -fL "%perl_mirror_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
-if not "%ERRORLEVEL%"=="0" ( echo. & powershell -c write-host "WARN: mirror download of Perl failed [ERRORLEVEL=%ERRORLEVEL%]" -f yellow ) else ( set "install_complete=true.mirror" )
+if not "%ERRORLEVEL%"=="0" ( echo. & echo WARN: mirror download of Perl failed [ERRORLEVEL=%ERRORLEVEL%] ) else ( set "install_complete=true.mirror" )
 :install_via_mirror_download_DONE
 
 if not defined install_complete ( echo ERR!: installation of Perl FAILED & goto _undefined_ 2>NUL || CMD /x/d/c exit -1 )
