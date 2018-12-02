@@ -61,8 +61,8 @@ set   "_perl_mirror_URI_latest=%_perl_mirror_URI_5.28.0.1%"
 set "direct_download_only="
 if "%perl_version%"=="5.8.8.4"  ( set "direct_download_only=true" )
 if "%perl_version%"=="5.8.9.5"  ( set "direct_download_only=true" )
-if "%perl_version%"=="5.10.1.1" ( set "direct_download_only=true" )
-if "%perl_version%"=="5.12.1.0" ( set "direct_download_only=true" )
+if "%perl_version%"=="5.10.1.2" ( set "direct_download_only=true" )
+if "%perl_version%"=="5.12.3.0" ( set "direct_download_only=true" )
 if "%perl_version%"=="5.14.4.1" ( set "direct_download_only=true" )
 if "%perl_version%"=="5.16.3.1" ( set "direct_download_only=true" )
 :: * perl versions after this are available via `cinst`
