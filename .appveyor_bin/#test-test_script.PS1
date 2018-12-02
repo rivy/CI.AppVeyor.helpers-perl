@@ -7,8 +7,8 @@ if ( ! $env:CI_HELPERS ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
 
 if ( $env:CI_SKIP ) {
     write-host "info: testing not done (CI_SKIP enabled)"
-if ( $env:CI_SKIP_TEST ) {
-        write-host "info: testing not done (CI_SKIP_TEST enabled)"
+} elseif ( $env:CI_SKIP_TEST ) {
+    write-host "info: testing not done (CI_SKIP_TEST enabled)"
 } elseif ( $env:OS_unsupported ) {
     write-host "info: testing not done (OS unsupported)"
 } else {
