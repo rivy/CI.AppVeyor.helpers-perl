@@ -54,7 +54,7 @@ These variables have intelligent defaults and can, in general, be left alone as 
 
 `Perl_VERSION` is obviously used to select between various perl versions for testing. Shorthand, "generic" versions can be used (eg, `5.8`, `5.16`, ...) and, for versions in the "known" set, will be expanded to an appropriate full version. Current "generic" and "known" versions can be seen in the [*#install.install-perl.BAT*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/.appveyor_bin/%23install.install-perl.BAT) script (located in the [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin) directory). Additionally, these "known" versions are available via mirror and will be downloaded automatically whenever the main StrawberryPerl source site is unavailable (see [strawberryperl.com/issues#16](https://github.com/StrawberryPerl/strawberryperl.com/issues/16), [strawberryperl.com/issues#10](https://github.com/StrawberryPerl/strawberryperl.com/issues/10)).
 
-##### *.appveyor.yml* ~ common additional configuration variables
+##### *.appveyor.yml* ~ additional common user configuration variables
 
 |||
 -|-
