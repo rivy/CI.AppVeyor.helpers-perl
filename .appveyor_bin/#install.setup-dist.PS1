@@ -12,4 +12,4 @@ if ( $env:DIST_TOOLING -ieq 'build' -and $($_=$(perl -MModule::Build -e "print M
 if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }
 
 set-PSdebug -off
-exit $exit_val
+write-host "exit $exit_val" -f yellow
