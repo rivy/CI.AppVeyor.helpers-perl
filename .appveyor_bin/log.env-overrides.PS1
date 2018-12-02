@@ -12,9 +12,9 @@
 
   $vars = @(
     # * configuration environment variables expected to be null
-    # 'AUTOMATED_TESTING',
     'AUTHOR_TESTING', 'RELEASE_TESTING',
     'TEST_ALL', 'TEST_AUTHOR', 'TEST_RELEASE',
+    # 'AUTOMATED_TESTING',
     'COVERAGE',
     # 'CI_CACHE_DIR',
     'CI_DEBUG', 'CI_DEBUG_PERL_INSTALL',
@@ -25,8 +25,9 @@
     'DEVEL_COVER_OPTIONS',
     'DIST_EXTRA_DEPS','DIST_SUPPRESS_DEPS','DIST_TOOLING',
     'HARNESS_OPTIONS','HARNESS_PERL_SWITCHES', 'HARNESS_TIMER'
-    'PERL5OPT',
+    # 'make',
     'OS_unsupported',
+    'PERL5OPT',
     'TEST_FILES', 'TEST_METHOD'
     );
 
