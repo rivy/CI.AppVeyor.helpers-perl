@@ -11,12 +11,12 @@ if ( $env:CI_SKIP ) {
     if ( $env:DIST_TOOLING -ieq 'build' ) {
         write-host "[``perl Build.PL``]"
         & "perl" @( "Build")
-        $exit_val = $LASTEXITCODE
+        if ( $LASTEXITCODE -neq 0 ) { $exit_val = $LASTEXITCODE }
     }
     if ( $env:DIST_TOOLING -ieq 'make ' ) {
         write-host "[``${env:make}``]"
         & "${env:make}"
-        $exit_val = $LASTEXITCODE
+        if ( $LASTEXITCODE -neq 0 ) { $exit_val = $LASTEXITCODE }
     }
 }
 
