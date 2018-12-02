@@ -53,6 +53,18 @@ These variables have intelligent defaults and can, in general, be left alone as 
 
 `Perl_VERSION` is obviously used to select between various perl versions for testing. Shorthand, "generic" versions can be used (eg, `5.8`, `5.16`, ...) and, for versions in the "known" set, will be expanded to an appropriate full version. Current "generic" and "known" versions can be seen in the [*#install.install-perl.BAT*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/.appveyor_bin/%23install.install-perl.BAT) script (located in the [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin) directory). Additionally, these "known" versions are available via mirror and will be downloaded automatically whenever the main StrawberryPerl source site is unavailable (see [strawberryperl.com/issues#16](https://github.com/StrawberryPerl/strawberryperl.com/issues/16), [strawberryperl.com/issues#10](https://github.com/StrawberryPerl/strawberryperl.com/issues/10)).
 
+##### additional commonly used configuration variables
+
+|||
+-|-
+AUTHOR_TESTING  | enable "author" testing; <br> [ "" == `false`, non-empty == `true` ]
+RELEASE_TESTING | enable "release" testing; <br> [ "" == `false`, non-empty == `true` ]
+TEST_ALL        | enable all tests; <br> [ "" == `false`, non-empty == `true` ]
+TEST_AUTHOR     | enable "author" tests; <br> [ "" == `false`, non-empty == `true` ]
+TEST_RELEASE    | enable "release" tests; <br> [ "" == `false`, non-empty == `true` ]
+
+The above table lists the usual definition / action of these variables. But the true effect of these variables will be defined by the author's testing design.
+
 ###### *.appveyor.yml* utility variables
 
 |||
