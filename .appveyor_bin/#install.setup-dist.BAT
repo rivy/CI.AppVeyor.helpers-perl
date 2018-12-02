@@ -45,24 +45,25 @@ if NOT DEFINED DIST_TOOLING ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 if DEFINED DIST_SUPPRESS_DEPS ( goto :_check_OS_unsupported_ )
 
 ::
-echo [%TIME%] ### # ... HACK for `cpanm` overlooking "test_requires" (and "test_recommends")
+echo [%TIME%] ### # ... HACK for `cpanm` overlooking "test_requires" and "test_recommends"
 ::# note: `cpanm` will sometimes overlook "test_requires" and/or "test_recommends" modules; this bug is reproducible but only occurs for some distributions
 ::# * HACK `cpanm`, creating a faux distribution directory with a minimal "Makefile.PL" and META build information
 echo [%TIME%] ### # ... .... create faux distribution
-set "_dir=%TEMP%\%APPVEYOR_JOB_ID%\cpanm-rec-hack"
-if EXIST "%_dir%" ( rmdir /s/q "%_dir%" )
-mkdir "%_dir%"
-copy cpanfile "%_dir%" >NUL 2>&1 || cd . &:: suppress any error
-copy META.* "%_dir%" >NUL 2>&1 || cd . &:: suppress any error
-copy MYMETA.* "%_dir%" >NUL 2>&1 || cd . &:: suppress any error
-pushd "%_dir%"
+set "_faux_dir=%TEMP%\%APPVEYOR_JOB_ID%\cpanm-rec-hack"
+if EXIST "%_faux_dir%" ( rmdir /s/q "%_faux_dir%" )
+mkdir "%_faux_dir%"
+copy cpanfile "%_faux_dir%" >NUL 2>&1 || cd . &:: suppress any error
+copy META.* "%_faux_dir%" >NUL 2>&1 || cd . &:: suppress any error
+copy MYMETA.* "%_faux_dir%" >NUL 2>&1 || cd . &:: suppress any error
+pushd "%_faux_dir%"
 echo use ExtUtils::MakeMaker; WriteMakefile(); > Makefile.PL    &:: create minimal Makefile.PL
-echo [%TIME%] ### # ... .... re-run `cpanm` within faux distribution
+echo [%TIME%] ### # ... .... run future `cpanm` within the faux distribution
 popd
+::
 
 ::# install baseline dependencies
 echo [%TIME%] ### install distribution dependencies
-pushd "%_dir%"
+pushd "%_faux_dir%" &:: use faux distribution
 echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps .`
 call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps .
 popd
@@ -85,25 +86,8 @@ if DEFINED DIST_SUPPRESS_DEPS ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 ::# install any further optional dependencies
 echo [%TIME%] ### install recommended modules
-pushd "%_dir%"
+pushd "%_faux_dir%" &:: use faux distribution
 echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps .`
 call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps .
 popd
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
-::
-REM echo [%TIME%] ### # ... HACK for `cpanm` overlooking "test_recommends"
-REM ::# note: `cpanm` will sometimes overlook "test_recommends" modules; this bug is reproducible but only occurs for some distributions
-REM ::# * HACK `cpanm`, creating a faux distribution directory with a minimal "Makefile.PL" and META build information
-REM echo [%TIME%] ### # ... .... create faux distribution
-REM set "_dir=%TEMP%\%APPVEYOR_JOB_ID%\cpanm-rec-hack"
-REM if EXIST "%_dir%" ( rmdir /s/q "%_dir%" )
-REM mkdir "%_dir%"
-REM copy cpanfile "%_dir%" >NUL 2>&1 || cd . &:: suppress any error
-REM copy META.* "%_dir%" >NUL 2>&1 || cd . &:: suppress any error
-REM copy MYMETA.* "%_dir%" >NUL 2>&1 || cd . &:: suppress any error
-REM pushd "%_dir%"
-REM echo use ExtUtils::MakeMaker; WriteMakefile(); > Makefile.PL    &:: create minimal Makefile.PL
-REM echo [%TIME%] ### # ... .... re-run `cpanm` within faux distribution
-REM echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" .`
-REM call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" .
-REM popd
