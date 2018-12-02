@@ -115,6 +115,9 @@ install:
   - ps: if (! $env:DEVEL_COVER_OPTIONS) { . "${env:CI_HELPERS}\#install.setup-cover_options.PS1" }
   # setup testing method/options and test files
   - ps: . "${env:CI_HELPERS}\#install.setup-testing.PS1"
+
+  - ps: . "${env:CI_HELPERS}\log.env.PS1"
+
   # distribution prep prior to the build/make process (ie, build dependencies and OS_unsupported check)
   - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   - ps: . "${env:CI_HELPERS}\#install.setup-dist.PS1"
