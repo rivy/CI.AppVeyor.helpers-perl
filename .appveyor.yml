@@ -118,7 +118,7 @@ install:
   # distribution prep prior to the build/make process (ie, build dependencies and OS_unsupported check)
   - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   - call "%CI_HELPERS%\#install.setup-dist.BAT"
-  - ps: if ( $env:DIST_TOOLING -ieq 'build' -and $($_=$(perl -MModule::Build -e "print Module::Build->VERSION()").Replace("_",""); $_ -lt 0.421) ) { write-host 'WARN:: using buggy early version of Module::Build ($_); consider requiring later version' -f yellow }
+  - ps: if ( $env:DIST_TOOLING -ieq 'build' -and $($_=$(perl -MModule::Build -e "print Module::Build->VERSION()").Replace("_",""); $_ -lt 0.421) ) { write-host $("WARN:"+"using buggy early version of Module::Build ($_); consider requiring later version") -f yellow }
   - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   # coverage prep
   - ps: ; write-host $("[{0:HH:mm:ss}].install (coverage)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
