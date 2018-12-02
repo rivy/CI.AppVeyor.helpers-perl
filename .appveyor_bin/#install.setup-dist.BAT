@@ -6,14 +6,14 @@ set _CPAN_VERBOSITY=--quiet
 if DEFINED CI_DEBUG ( set _CPAN_VERBOSITY=--verbose )
 if NOT DEFINED CI_HELPERS set "CI_HELPERS=%~dp0"
 
-if DEFINED CI_SKIP ( echo INFO: build not done ^(CI_SKIP enabled^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
-if DEFINED OS_unsupported ( echo INFO: setup not done ^(OS unsupported^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+if DEFINED CI_SKIP ( echo info: build not done ^(CI_SKIP enabled^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+if DEFINED OS_unsupported ( echo info: setup not done ^(OS unsupported^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
-if DEFINED DIST_SUPPRESS_DEPS if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo INFO: skipping dependency discovery/installation [DIST_SUPPRESS_DEPS=%DIST_SUPPRESS_DEPS%] & goto :_check_OS_unsupported_ )
-if NOT DEFINED DIST_TOOLING if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo INFO: skipping dependency discovery/installation for non-build/make distribution & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+if DEFINED DIST_SUPPRESS_DEPS if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo info: skipping dependency discovery/installation [DIST_SUPPRESS_DEPS=%DIST_SUPPRESS_DEPS%] & goto :_check_OS_unsupported_ )
+if NOT DEFINED DIST_TOOLING if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo info: skipping dependency discovery/installation for non-build/make distribution & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
-if DEFINED DIST_SUPPRESS_DEPS if DEFINED COVERAGE ( echo INFO: dependency suppression disabled for coverage [COVERAGE=%COVERAGE%] )
-if DEFINED DIST_SUPPRESS_DEPS if DEFINED DIST_EXTRA_DEPS ( echo INFO: dependency suppression disabled for extra dependencies [DIST_EXTRA_DEPS=%DIST_EXTRA_DEPS%] )
+if DEFINED DIST_SUPPRESS_DEPS if DEFINED COVERAGE ( echo info: dependency suppression disabled for coverage [COVERAGE=%COVERAGE%] )
+if DEFINED DIST_SUPPRESS_DEPS if DEFINED DIST_EXTRA_DEPS ( echo info: dependency suppression disabled for extra dependencies [DIST_EXTRA_DEPS=%DIST_EXTRA_DEPS%] )
 
 echo [%TIME%] ### install basic modules with "issues"
 ::# * pre-install problematic modules (especially for perl versions < 5.14)
@@ -59,7 +59,7 @@ if /i "%DIST_TOOLING%"=="build" (
     set "_DIST_PREBUILDER=perl Makefile.PL"
   )
 call %_DIST_PREBUILDER% 2>&1 | findstr /b /i /r "OS unsupported\b" >NUL 2>&1 && set "OS_unsupported=OS unsupported" || set "OS_unsupported="
-if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
+REM if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 set "_DIST_PREBUILDER="
 
 if DEFINED OS_unsupported ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )

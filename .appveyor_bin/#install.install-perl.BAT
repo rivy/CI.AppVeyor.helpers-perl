@@ -4,8 +4,8 @@ set "ERRORLEVEL="
 
 :: NOTE: contains some peculiar statement ordering and redirections b/c of AppVeyor bugs when executing BAT/CMD scripts
 
-if DEFINED CI_SKIP ( echo INFO: perl install/config not done ^(CI_SKIP enabled^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
-if DEFINED OS_unsupported ( echo INFO: perl install/config not done ^(OS unsupported^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+if DEFINED CI_SKIP ( echo info: perl install/config not done ^(CI_SKIP enabled^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+if DEFINED OS_unsupported ( echo info: perl install/config not done ^(OS unsupported^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 if not defined perl_version ( set "perl_version=latest" )
 
@@ -121,11 +121,11 @@ if not "%ERRORLEVEL%"=="0" ( echo. & powershell -c write-host "WARN: mirror down
 if not defined install_complete ( echo ERR!: installation of Perl FAILED & goto _undefined_ 2>NUL || CMD /x/d/c exit -1 )
 echo done
 
-:: ## configure
-echo|set /p OUTPUT="Configuring Perl ... "
+REM :: ## configure
+REM echo|set /p OUTPUT="Configuring Perl ... "
 
-set "PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%"
+REM set "PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%"
 
-for /f "usebackq delims=" %%d in (`call perl -MConfig -e"print $Config{make}"`) do set make=%%d
+REM for /f "usebackq delims=" %%d in (`call perl -MConfig -e"print $Config{make}"`) do set make=%%d
 
-echo done
+REM echo done

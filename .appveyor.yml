@@ -92,10 +92,10 @@ install:
   - ps: if ( ! $env:CI_HELPERS ) { $repo_path = $( mkdir "${env:CI_TEMP_DIR}\helpers" ).Fullname ; $git_cmd = "git clone ${env:CI_HELPER_REPO} `"${repo_path}`" -b ${env:CI_HELPER_BRANCH} 2>&1" ; write-host "[``${git_cmd}``]" ; & 'CMD' @( '/c', $git_cmd ) ; $err = $LASTEXITCODE ; $env:CI_HELPERS = "${repo_path}\.appveyor_bin" ; if ($err -ne 0) { exit -1 } ; }
   - ps: ; write-host $("[{0:HH:mm:ss}].install (helpers) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   # resolve requested coverage with needed configuration
-  - ps: . "${env:CI_HELPERS}\#install.evaluate-coverage.ps1"
+  - ps: . "${env:CI_HELPERS}\#install.determine-coverage.PS1"
   ##
   # highlight any overrides within baseline environment
-  - ps: $baseline_env | & "${env:CI_HELPERS}\log.env-overrides.ps1"
+  - ps: $baseline_env | & "${env:CI_HELPERS}\log.env-overrides.PS1"
   ##
   # move "C:\mingw" to avoid cross library linking (a problem with older perl versions, breaking dll compilation with "/mingw/lib/dllcrt2.o:(.text+0xd1): undefined reference to `__dyn_tls_init_callback'")
   # * only truly needed for modules containing XS compilation, but ok for all modules
@@ -106,26 +106,22 @@ install:
   - if DEFINED APPVEYOR_REPO_BRANCH if /i "%APPVEYOR_REPO_SCM%"=="git" ( git checkout "%APPVEYOR_REPO_BRANCH%" >NUL & git reset --hard "%APPVEYOR_REPO_COMMIT%" )
   # install perl (strawberry variant) + version verification
   - ps: ; write-host $("[{0:HH:mm:ss}].install (perl)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
-  - call "%CI_HELPERS%\#install.install-perl.BAT"
+  - ps: . "${env:CI_HELPERS}\#install.install-perl.PS1"
   - perl -V
   - ps: ; write-host $("[{0:HH:mm:ss}].install (perl) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   # determine build tooling
-  - if NOT DEFINED DIST_TOOLING if EXIST "Build.PL" ( set "DIST_TOOLING=build" )
-  - if NOT DEFINED DIST_TOOLING if EXIST "Makefile.PL" ( set "DIST_TOOLING=make" )
-  # * warn about buggy early Module::Builds for "build" tooling
-  - ps: if ( $env:DIST_TOOLING -ieq 'build' -and $($_=$(perl -MModule::Build -e "print Module::Build->VERSION()").Replace('_',''); $_ -lt 0.421) ) { write-host "WARN using buggy early version of Module::Build ($_); consider requiring later version" }
+  - ps: . "${env:CI_HELPERS}\#install.determine-tooling.PS1"
   # setup DEVEL_COVER_OPTIONS, if needed
-  - ps: if (! $env:DEVEL_COVER_OPTIONS) { . "${env:CI_HELPERS}\#install.setup-cover-options.ps1" }
+  - ps: if (! $env:DEVEL_COVER_OPTIONS) { . "${env:CI_HELPERS}\#install.setup-cover_options.PS1" }
   # setup testing method/options and test files
-  - ps: . "${env:CI_HELPERS}\#install.setup-testing.ps1"
+  - ps: . "${env:CI_HELPERS}\#install.setup-testing.PS1"
   # distribution prep prior to the build/make process (ie, build dependencies and OS_unsupported check)
   - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
-  - call "%CI_HELPERS%\#install.setup-dist.BAT"
-  - ps: if ( $env:DIST_TOOLING -ieq 'build' -and $($_=$(perl -MModule::Build -e "print Module::Build->VERSION()").Replace("_",""); $_ -lt 0.421) ) { write-host $("WARN:"+"using flawed early version of Module::Build ($_); consider requiring later version (>= 0.421)") -f yellow }
+  - ps: . "${env:CI_HELPERS}\#install.setup-dist.PS1"
   - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   # coverage prep
   - ps: ; write-host $("[{0:HH:mm:ss}].install (coverage)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
-  - ps: . "${env:CI_HELPERS}\#install.setup-coverage.ps1"
+  - ps: . "${env:CI_HELPERS}\#install.setup-coverage.PS1"
   - ps: ; write-host $("[{0:HH:mm:ss}].install (coverage) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   #
   - ps: ; write-host $("[{0:HH:mm:ss}].install ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
@@ -142,30 +138,30 @@ before_build:
   # * for COVERAGE builds, preload JSON:PP to avoid JSON::PP::Boolean redefine warning (see <https://github.com/rurban/Cpanel-JSON-XS/issues/65#issuecomment-219352754>)
   - if DEFINED COVERAGE (set HARNESS_PERL_SWITCHES=-MJSON::PP %HARNESS_PERL_SWITCHES%)
   #
-  - call "%CI_HELPERS%\#build-before_build.BAT"
+  - ps: . "${env:CI_HELPERS}\#build-before_build.PS1"
   # show final build-related environment variables
-  - call "%CI_HELPERS%\log.env.BAT"
+  - ps: . "${env:CI_HELPERS}\log.env.PS1"
   #
   - ps: ; write-host $("[{0:HH:mm:ss}].build.before_build ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 build_script:
   - ps: ; write-host $("[{0:HH:mm:ss}].build.build_script" -f $($mark = get-date; $mark)) -f darkgray
-  - call "%CI_HELPERS%\#build-build_script.BAT"
+  - ps: . "${env:CI_HELPERS}\#build-build_script.PS1"
   - ps: ; write-host $("[{0:HH:mm:ss}].build.build_script ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 test_script:
   - ps: ; write-host $("[{0:HH:mm:ss}].test.test_script" -f $($mark = get-date; $mark)) -f darkgray
-  - call "%CI_HELPERS%\#test-test_script.BAT"
+  - ps: . "${env:CI_HELPERS}\#test-test_script.PS1"
   - ps: ; write-host $("[{0:HH:mm:ss}].test.test_script ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
 after_test:
   - ps: ; write-host $("[{0:HH:mm:ss}].test.after_test" -f $($mark = get-date; $mark)) -f darkgray
   # reporting
   # * report any code coverage information
-  - ps: if (-not $env:OS_unsupported -and $env:COVERAGE) { $env:COVERAGE.split() | foreach { CMD /c "cover -report $_ 2>&1" } }
+  - ps: if (-not $env:OS_unsupported -and $env:COVERAGE) { $env:COVERAGE.split() | foreach { & 'CMD' @( '/c', "cover -report $_ 2>&1" ) } }
   - ps: ; write-host $("[{0:HH:mm:ss}].test.after_test ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
   # end with any informational or warning messages, if needed
-  - ps: if ($env:CI_SKIP) { write-host -f magenta "INFO:` CI_SKIP enabled" ; Add-AppveyorMessage -Message "CI_SKIP enabled" -Category Info }
-  - ps: if ($env:CI_SKIP_TEST) { write-host -f magenta "INFO:` CI_SKIP_TEST enabled" ; Add-AppveyorMessage -Message "CI_SKIP_TEST enabled" -Category Info }
+  - ps: if ($env:CI_SKIP) { write-host -f magenta "info:` CI_SKIP enabled" ; Add-AppveyorMessage -Message "CI_SKIP enabled" -Category Info }
+  - ps: if ($env:CI_SKIP_TEST) { write-host -f magenta "info:` CI_SKIP_TEST enabled" ; Add-AppveyorMessage -Message "CI_SKIP_TEST enabled" -Category Info }
   # * prominent "unsupported" warning
   - ps: if ($env:OS_unsupported) { write-host -f magenta "WARN:` OS unsupported" ; Add-AppveyorMessage -Message "OS unsupported" -Category Warning }
