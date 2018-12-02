@@ -64,8 +64,8 @@ popd
 ::# install baseline dependencies
 echo [%TIME%] ### install distribution dependencies
 pushd "%_faux_dir%" &:: use faux distribution
-echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps .`
-call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps .
+echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps ExtUtils::MakeMaker~"< 7.0" .`
+call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps ExtUtils::MakeMaker~"< 7.0" .
 popd
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 
@@ -87,7 +87,7 @@ if DEFINED DIST_SUPPRESS_DEPS ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 ::# install any further optional dependencies
 echo [%TIME%] ### install recommended modules
 pushd "%_faux_dir%" &:: use faux distribution
-echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps .`
-call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps .
+echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" .`
+call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" .
 popd
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
