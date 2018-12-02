@@ -2,6 +2,8 @@
 if DEFINED CI_DEBUG ( echo on )
 set "ERRORLEVEL="
 
+powershell -c "write-host '[install perl]' -f green"
+
 :: NOTE: contains some peculiar statement ordering and redirections b/c of AppVeyor bugs when executing BAT/CMD scripts
 
 if DEFINED CI_SKIP ( echo INFO: perl install/config not done ^(CI_SKIP enabled^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
