@@ -42,6 +42,7 @@ COVERAGE              | requested coverage types; <br> "" => no coverage request
 DEVEL_COVER_OPTIONS   | options for `cover`; <br> "" => auto-set, value determined by DIST_TOOLING; quoted whitespace is an empty/neutral setting which also blocks auto-set
 DIST_EXTRA_DEPS       | additional required/requested dependencies for building and/or testing (listed as `cpanm`-compatible arguments, eg, `Test::Differences URI~1.000`)
 DIST_SUPPRESS_DEPS    | suppress discovery and installation of dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS); <br> [ "" == `false`, non-empty == `true` ] <br> `true` can be useful for CORE modules
+DIST_SUPPRESS_RECS    | suppress installation of recommended dependencies, unless otherwise required (by COVERAGE or DIST_EXTRA_DEPS); <br> [ "" == `false`, non-empty == `true` ] <br> `true` can be useful for testing the distribution in a more limited environment
 DIST_TOOLING          | build tooling category; <br> [ "build", "make" ] <br> "" => auto-set based on existence of *Build.PL* and/or *Makefile.PL*
 Perl_VERSION          | Perl version to use for testing
 TEST_METHOD           | testing command/method; <br> "" => auto-set based on DIST_TOOLING (`perl Build test`, `%make% test`, or `prove -bl`)
