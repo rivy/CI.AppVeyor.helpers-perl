@@ -82,8 +82,8 @@ install:
   - if NOT DEFINED CI_HELPER_API_VERSION ( set "CI_HELPER_API_VERSION=1" )
   - if NOT DEFINED CI_HELPER_REPO ( set "CI_HELPER_REPO=https://github.com/rivy/CI.AppVeyor.helpers-perl.git" )
   - if NOT DEFINED CI_HELPER_BRANCH ( set "CI_HELPER_BRANCH=stable" )
-  - if /I "%CI_HELPER_BRANCH%"=="canary" ( set "CI_HELPER_BRANCH=canary.APIv%CI_HELPER_API_VERSION%" )
-  - if /I "%CI_HELPER_BRANCH%"=="stable" ( set "CI_HELPER_BRANCH=stable.APIv%CI_HELPER_API_VERSION%" )
+  - if /i "%CI_HELPER_BRANCH%"=="canary" ( set "CI_HELPER_BRANCH=canary.APIv%CI_HELPER_API_VERSION%" )
+  - if /i "%CI_HELPER_BRANCH%"=="stable" ( set "CI_HELPER_BRANCH=stable.APIv%CI_HELPER_API_VERSION%" )
   # find / download helpers
   - ps: ; write-host $("[{0:HH:mm:ss}].install (helpers)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   # * use "vendored" copy if present
