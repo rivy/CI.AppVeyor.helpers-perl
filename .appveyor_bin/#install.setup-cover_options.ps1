@@ -1,4 +1,4 @@
-# setup DEVEL_COVER_OPTIONS
+# install ~ setup DEVEL_COVER_OPTIONS
 # * options used by `cover`
 if ( $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 

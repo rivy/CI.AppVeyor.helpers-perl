@@ -1,4 +1,4 @@
-# setup TEST_METHOD and TEST_FILES
+# install ~ setup TEST_METHOD and TEST_FILES
 if ( $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 if ((! $env:TEST_METHOD) -and ($env:DIST_TOOLING -ieq "build")) { $env:TEST_METHOD = "perl Build test" }
