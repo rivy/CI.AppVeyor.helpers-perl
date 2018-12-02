@@ -5,8 +5,18 @@ $exit_val = 0
 
 if ( ! $env:CI_HELPERS ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
 
-& 'CMD' @('/x/c', "${env:CI_HELPERS}\#test-test_script.BAT 2>&1" )
-if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }
+if ( $env:CI_SKIP ) {
+    write-host "info: testing not done (CI_SKIP enabled)"
+if ( $env:CI_SKIP_TEST ) {
+        write-host "info: testing not done (CI_SKIP_TEST enabled)"
+} elseif ( $env:OS_unsupported ) {
+    write-host "info: testing not done (OS unsupported)"
+} else {
+    $test_cmd = @($env:TEST_METHOD, $env:TEST_FILES) -join ' '
+    write-host "[``$test_cmd``]"
+    & "$env:TEST_METHOD" @( "$env:TEST_FILES" )
+    if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }
+}
 
 set-PSdebug -off
 exit $exit_val
