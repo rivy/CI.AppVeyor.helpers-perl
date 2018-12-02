@@ -3,7 +3,7 @@
 
 # AppVeyor CI Helpers for Perl
 
-This repository contains a complete [AppVeyor CI](https://appveyor.com) configuration and associated helper scripts to simplify Windows-based testing of Perl distributions.
+This repository contains a complete [AppVeyor CI](https://appveyor.com) configuration solution which enables easy, one-step, Windows-based testing of Perl distributions.
 
 ## Rapid setup
 
@@ -21,17 +21,71 @@ This repository contains a complete [AppVeyor CI](https://appveyor.com) configur
 
 ### [*.appveyor.yml*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/.appveyor.yml)
 
-*.appveyor.yml* is a single file which, when added into a perl distribution, will add the ability to test and analyze the distribution using AppVeyor CI.
+*.appveyor.yml* is a single "drop-in" file which, when added into a Perl distribution, will add the ability to test and analyze the a user's Perl distribution within an AppVeyor CI Windows environment (ie, for the `MSWin32` platform).
 
-If either *Build.PL* or *Makefile.PL* is present in the distribution main directory, the module will be automatically built prior to testing, using the standard perl build or make idiom. Testing will then be done with the respective usual idiom (either `perl Build test` or `%make% test`), with `prove` as a fall-back for distributions without the traditional build tooling (eg, many `dzil` packages).
+If either *Build.PL* or *Makefile.PL* is present in the distribution main directory, the module will be automatically built prior to testing, using the standard Perl build or make idiom. Testing will then be done with the respective usual idiom (either `perl Build test` or `%make% test`), with `prove` as a fallback for distributions without the traditional build tooling (eg, many `dzil` packages).
 
-Distributions which lack both *Build.PL* and *Makefile.PL*, but can be tested without non-CORE dependencies (eg, some CORE modules), should work "out-of-the-box", using the `prove` fallback method. The DIST_EXTRA_DEPS configuration variable (see below) can be also used to add any required modules for `prove` testing.
+Distributions which lack both *Build.PL* and *Makefile.PL*, but which can be tested without needing non-CORE dependencies, should work "out-of-the-box", using the `prove` fallback method. If additional non-CORE dependencies are needed, the DIST_EXTRA_DEPS configuration variable (see below) can be used to install any required modules prior to `prove` testing.
 
 Alternate build and test methods are also possible via the use of configuration variables (detailed below).
 
-Notably, there is no direct support for `dzil` building and testing. Support may be added in the future, but the current `dzil` module ecosystem (as of 2018-11) has many dependencies which won't cleanly install on Win32 environments. Until better Win32 support is available for direct `dzil` building and testing, the fallback, `prove`, testing combined with the use of DIST_EXTRA_DEPS (for testing dependencies) can be a workable solution. Alternatively, the `Dist::Zilla::Plugin::MakeMaker` module could be used by authors to generate an ExtUtils::MakeMaker-compatible distribution for storage in its repository.
+Notably, there is no direct support for `dzil` building and testing. Support may be added in the future, but the current `dzil` module ecosystem (as of 2018-11) has many dependencies which won't cleanly install on MSWin32 environments. Until better MSWin32 support is available for direct `dzil` building and testing, `prove` fallback testing combined with the use of DIST_EXTRA_DEPS (for testing dependencies) can be a workable solution. Alternatively, the "Dist::Zilla::Plugin::MakeMaker" module could be used by authors to generate an ExtUtils::MakeMaker-compatible distribution for storage in its repository.
 
-#### *.appveyor.yml* ~ configuration variables
+### *.appveyor_init.{BAT,PS1}* (optional)
+
+The optional file *.appveyor_init.BAT* and/or *.appveyor_init.PS1* can serve as distribution-specific overrides of the AppVeyor configuration, especially (but not limited to) overriding global environment variables.
+
+This hook allows use of the unchanged *.appveyor.yml* from this repository while still allowing distribution-specific configuration changes (eg, for CORE modules using `set DIST_SUPPRESS_DEPS=1`).
+
+A sample [*.appveyor_init.BAT*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/eg/.appveyor_init.BAT) file is included in the [*eg* directory](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/eg).
+
+### [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin)
+
+The *.appveyor_bin* directory contains multiple helper scripts to streamline *.appveyor.yml* and to provide workarounds for various build issues (within both the AppVeyor and the Perl build/test processes).
+
+### "API" and stability
+
+This solution implements an "API" contract so that it can be reliably used into the future while still enabling change within the solution itself.
+
+The "API" is detailed in the section below and specifies files and configuration variables that users can expect to remain available when using that "API" iteration. Two repository branches, "stable" and "canary", will always be available for each iteration of the "API", using the branch name as a prefix (eg, "stable.APIv1" and "canary.APIv1").
+
+Any change to the noted file names or configuration variables will constitute an API change. If/when an API change occurs, the API version number will be incremented by 1 and new stable and canary branches will be generated (eg, "stable.APIv2" and "canary.APIv2"). Prior API branches will always be left in place for continuity.
+
+The "canary" branch will receive more frequent helper updates with the (default) "stable" branch updating behind "canary" as the code becomes more time-trusted. The default *.appveyor.yml* configuration includes testing with both branches but allows failure of any "canary"-type branch so as not to break the test build. This helps test any "canary" changes widely without materially affecting test outcomes.
+
+Options for choosing the configuration branch is detailed below (see `CI_HELPER_BRANCH` in the "configuration variable" section). Additionally, "vendoring" the helper scripts is discussed below in the "vendoring" section.
+
+#### `APIv1`
+
+The current public "API" (`APIv1`) includes *.appveyor_init.{BAT,PS1}* and all files/directories within *.appveyor_bin*, excepting any files/directories that are prefaced with a leading underscore ('&#95;'). All files and directories prefixed with a leading underscore ('&#95;') are considered private and are not included in the "API" contract (ie, their names and function are allowed to change within the "API" branch). *All* contents of private directories are also considered private. *Don't* depend on private files or directories.
+
+##### CI phase helper scripts (within *.appveyor_bin*)
+
+|||
+-|-
+[*#install.determine-coverage.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin/%23install.determine-coverage.PS1)      | determine possible coverage reporting (requested via COVERAGE with requisite tokens); rewrites COVERAGE
+[*#install.install-perl.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin/%23install.install-perl.PS1)   | install requested `perl` version
+[*#install.determine-tooling.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin/%23install.determine-tooling.PS1)       | determine repository tooling (DIST_TOOLING)
+[*#install.setup-cover_options.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin/%23install.setup-cover_options.PS1)     | setup correct options for coverage testing (DEVEL_COVER_OPTIONS)
+[*#install.setup-testing.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin/%23install.setup-testing.PS1)        | determine testing method (TEST_METHOD) and test files (TEST_FILES)
+[*#install.setup-dist.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin/%23install.setup-dist.PS1)   | determine OS_unsupported and install distribution prerequisites (guided by DIST_SUPPRESS_RECS and DIST_SUPPRESS_RECS)
+[*#install.setup-coverage.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin/%23install.setup-coverage.PS1)       | install any required coverage prerequisites
+[*#build-before_build.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin/%23build-before_build.PS1)   | create build script
+[*#build-build_script.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin/%23build-build_script.PS1)   | execute build
+[*#test-test_script.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin/%23test-test_script.PS1)       | execute testing
+
+These scripts are named to correspond with specific AppVeyor CI phases and are listed in order of expected use.
+
+##### additional available helper scripts (within *.appveyor_bin*)
+
+|||
+-|-
+cpanm.BAT               | `cpanm` ("fat-packed" version with *no dependencies*)
+cpanm-mods_only.BAT     | `cpanm` modified to ignore local files (eg, `cpanm-mods_only version` will ignore a local *VERSION* file)
+log.env.PS1             | logs "important" environment variables
+log.env-overrides.PS1   | takes an input environment array and logs any changes to "important" environment variables
+
+##### configuration variables
 
 |||
 -|-
@@ -52,9 +106,25 @@ These variables have intelligent defaults and can, in general, be left alone as 
 
 `CI_HELPER_BRANCH` can be used to select between frequent helper updates (eg, "canary"), more stable code (eg, "stable" [the default]), or invariant (using a release TAG). Generally, from most to least stable ... [ "vendoring" (see below) > TAG > stable > canary > BRANCH ]. By definition, code updates and changes to the helper scripts are applied in the inverse order of "stability".
 
-`Perl_VERSION` is obviously used to select between various perl versions for testing. Shorthand, "generic" versions can be used (eg, `5.8`, `5.16`, ...) and, for versions in the "known" set, will be expanded to an appropriate full version. Current "generic" and "known" versions can be seen in the [*#install.install-perl.BAT*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/.appveyor_bin/%23install.install-perl.BAT) script (located in the [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin) directory). Additionally, these "known" versions are available via mirror and will be downloaded automatically whenever the main StrawberryPerl source site is unavailable (see [strawberryperl.com/issues#16](https://github.com/StrawberryPerl/strawberryperl.com/issues/16), [strawberryperl.com/issues#10](https://github.com/StrawberryPerl/strawberryperl.com/issues/10)).
+`Perl_VERSION` is obviously used to select between various perl versions for testing. Shorthand, "generic" versions can be used (eg, `5.8`, `5.16`, ...) and, for versions in the "known" set, will be expanded to an appropriate full version. Current "generic" and "known" versions can be seen in the [*#install.install-perl.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/.appveyor_bin/%23install.install-perl.PS1) script (located in the [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin) directory). Additionally, these "known" versions are available via mirror and will be downloaded automatically whenever the main StrawberryPerl source site is unavailable (see [strawberryperl.com/issues#16](https://github.com/StrawberryPerl/strawberryperl.com/issues/16), [strawberryperl.com/issues#10](https://github.com/StrawberryPerl/strawberryperl.com/issues/10)).
 
-##### *.appveyor.yml* ~ common additional configuration variables
+###### utility variables
+
+|||
+-|-
+CI_CACHE_DIR            | cache directory (set and constructed, but essentially unused [* see below])
+CI_DEBUG                | enable helper script debug output; <br> [ "" == `false`, non-empty == `true` ]
+CI_DEBUG_PERL_INSTALL   | debug/test all Perl install methods; <br> [ "" == `false`, non-empty == `true` ]
+CI_HELPER_BRANCH_DESC   | specific commit within CI_HELPER_REPO of helper utilities used for build/test
+CI_HELPERS              | path of directory containing "helper" scripts
+CI_TEMP_DIR             | working directory
+CI_SKIP                 | skip job actions (without error or warning)
+CI_SKIP_TEST            | skip job testing (without error or warning)
+OS_unsupported          | signals 'OS unsupported'; skips job actions (with a terminal "OS unsupported" warning)
+
+Note that caching can drop the perl install time by about 10% to 20% (usually, a few seconds). Because this is such a small overall time savings and because the available cache size, at 1GB total across all projects, is too small to hold the multiple perl downloads, caching remains unused (see <a/>ref: <https://www.appveyor.com/docs/build-cache/#cache-size-beta>).
+
+### Common user configuration variables
 
 |||
 -|-
@@ -64,28 +134,7 @@ TEST_ALL        | enable all tests; <br> [ "" == `false`, non-empty == `true` ]
 TEST_AUTHOR     | enable "author" tests; <br> [ "" == `false`, non-empty == `true` ]
 TEST_RELEASE    | enable "release" tests; <br> [ "" == `false`, non-empty == `true` ]
 
-The above table lists some commonly used additional configuration variables and their usual respective definition / action. But the true effect of these variables will be defined by the author's testing design and usually only matters to the author. If defined, these variables will be listed in the build log.
-
-###### *.appveyor.yml* ~ utility variables
-
-|||
--|-
-CI_CACHE_DIR            | cache directory (set and constructed, but essentially unused [* see below])
-CI_DEBUG                | enable helper script debug output; <br> [ "" == `false`, non-empty == `true` ]
-CI_DEBUG_PERL_INSTALL   | debug/test all Perl install methods; <br> [ "" == `false`, non-empty == `true` ]
-CI_HELPERS              | path of directory containing "helper" scripts
-CI_TEMP_DIR             | working directory
-CI_SKIP                 | skip job actions (without error or warning)
-CI_SKIP_TEST            | skip job testing (without error or warning)
-OS_unsupported          | signals 'OS unsupported'; skips job actions (with a terminal "OS unsupported" warning)
-
-Note that caching can drop the perl install time by about 10% to 20% (approximately 10 secs). Because this is such a small overall time savings and because the available cache size, at 1GB total across all projects, is too small to hold the multiple perl downloads, caching remains unused.
-
-<a/>ref: <https://www.appveyor.com/docs/build-cache/#cache-size-beta>
-
-### [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin)
-
-The *.appveyor_bin* directory contains multiple helper scripts to streamline *.appveyor.yml* and to provide workarounds for various build issues (within both the AppVeyor and the Perl build/test processes).
+The listed variables are not in the "API" per se but are commonly used in testing by most Perl distributions. The table lists these configuration variables and their usual respective definition / action. But notably the true effects of these variables will be defined by the user's testing design and usually only matters to the author. If defined, these variables will be listed in the build log.
 
 ### Code coverage
 
@@ -93,22 +142,12 @@ Code coverage can be enabled by adding the `CODECOV_TOKEN` and/or `COVERALLS_TOK
 
 Please note that these are secrets and should be treated as such. Neither of the token values should ever be included in the *.appveyor.yml* file or submitted into the distribution repository.
 
-### Optional distribution files
-
-#### *.appveyor_init.{BAT,PS1}*
-
-The files *.appveyor_init.BAT* and/or *.appveyor_init.PS1* can serve as distribution-specific overrides of the AppVeyor configuration, especially (but not limited to) overriding global environment variables.
-
-It may be included as a hook to allow distributions to maintain a stable code base from this repository (including the *.appveyor.yml* file), but still allow configuration changes (eg, for CORE modules using `set DIST_SUPPRESS_DEPS=1`).
-
-A sample [*.appveyor_init.BAT*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/eg/.appveyor_init.BAT) file is included in the [*eg* directory](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/eg).
-
 ### "vendoring"
 
 This repository can be "vendored" into a distribution by including both the [*.appveyor.yml*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/.appveyor.yml) configuration file and a copy of the [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin) directory at the root directory level of the distribution. During AppVeyor execution of the *.appveyor.yml* file, when the *.appveyor_bin* directory is found, the code within that directory will supersede and suppress cloning/downloading of the repository helper files.
 
 ## Copyright and License
 
-Copyright 2017-2018 by Roy Ivy III. All rights reserved.
+Copyright 2017-2019 by Roy Ivy III. All rights reserved.
 
 Licensed under the MIT License (a copy may be obtained from <https://opensource.org/licenses/mit>).
