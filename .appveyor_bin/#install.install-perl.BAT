@@ -30,7 +30,7 @@ set "_perl_download_URI_5.8.8.4=http://strawberryperl.com/download/5.8.8/strawbe
 set "_perl_download_URI_5.8.9.5=http://strawberryperl.com/download/5.8.9/strawberry-perl-5.8.9.5.zip"
 set "_perl_download_URI_5.10.1.2=http://strawberryperl.com/download/5.10.1.2/strawberry-perl-5.10.1.2-portable.zip"
 set "_perl_download_URI_5.12.3.0=http://strawberryperl.com/download/5.12.3.0/strawberry-perl-5.12.3.0-portable.zip"
-set "_perl_download_URI_5.14.4.1=http://strawberryperl.com/download/5.14.4.1/strawberry-perl-5.14.X.X-64bit-portable.zip"
+set "_perl_download_URI_5.14.4.1=http://strawberryperl.com/download/5.14.4.1/strawberry-perl-5.14.4.1-64bit-portable.zip"
 set "_perl_download_URI_5.16.3.1=http://strawberryperl.com/download/5.16.3.1/strawberry-perl-5.16.3.1-64bit-portable.zip"
 :: * perl versions after this are available via `cinst`
 set "_perl_download_URI_5.18.4.1=http://strawberryperl.com/download/5.18.4.1/strawberry-perl-5.18.4.1-64bit-portable.zip"
@@ -46,8 +46,8 @@ set "_perl_mirror_URI_5.8.8.4=https://github.com/rivy/CI.AppVeyor.helpers-perl-b
 set "_perl_mirror_URI_5.8.9.5=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.8.9.5.zip"
 set "_perl_mirror_URI_5.10.1.2=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.10.1.2-portable.zip"
 set "_perl_mirror_URI_5.12.3.0=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.12.3.0-portable.zip"
-set "_perl_mirror_URI_5.14.4.1=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.14.4.1-portable.zip"
-set "_perl_mirror_URI_5.16.3.1=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.16.3.1-portable.zip"
+set "_perl_mirror_URI_5.14.4.1=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.14.4.1-64bit-portable.zip"
+set "_perl_mirror_URI_5.16.3.1=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.16.3.1-64bit-portable.zip"
 :: * perl versions after this are available via `cinst`
 set "_perl_mirror_URI_5.18.4.1=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.18.4.1-64bit-portable.zip"
 set "_perl_mirror_URI_5.20.3.3=https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.20.3.3-64bit-portable.zip"
@@ -103,8 +103,8 @@ if defined CI_DEBUG_PERL_INSTALL ( set "install_complete=" )
 if defined install_complete goto :install_via_direct_download_DONE
 if not defined perl_download_URI goto :install_via_direct_download_DONE
 set "ERRORLEVEL="
-echo|set /p OUTPUT="(%perl_version%; via direct download from '%perl_download_URI%') ... "
-call curl -# -L "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
+echo|set /p OUTPUT="(%perl_version%; direct download from '%perl_download_URI%') ... "
+call curl -# -fL "%perl_download_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
 if not "%ERRORLEVEL%"=="0" ( echo. & powershell -c write-host "WARN: direct download of Perl failed [ERRORLEVEL=%ERRORLEVEL%]" -f yellow ) else ( set "install_complete=true.direct" )
 :install_via_direct_download_DONE
 
@@ -113,8 +113,8 @@ if defined CI_DEBUG_PERL_INSTALL ( set "install_complete=" )
 if defined install_complete goto :install_via_mirror_download_DONE
 if not defined perl_mirror_URI goto :install_via_mirror_download_DONE
 set "ERRORLEVEL="
-echo|set /p OUTPUT="(%perl_version%; via mirror download from '%perl_mirror_URI%') ... "
-call curl -# -L "%perl_mirror_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
+echo|set /p OUTPUT="(%perl_version%; mirror download from '%perl_mirror_URI%') ... "
+call curl -# -fL "%perl_mirror_URI%" -o "%_DL_DIR%\perl-%perl_version%.zip" >NUL 2>&1 && call 7z -bd -y x "%_DL_DIR%\perl-%perl_version%.zip" -oc:\strawberry >NUL
 if not "%ERRORLEVEL%"=="0" ( echo. & powershell -c write-host "WARN: mirror download of Perl failed [ERRORLEVEL=%ERRORLEVEL%]" -f yellow ) else ( set "install_complete=true.mirror" )
 :install_via_mirror_download_DONE
 
