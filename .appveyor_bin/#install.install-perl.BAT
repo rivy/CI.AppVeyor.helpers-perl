@@ -4,8 +4,8 @@ set "ERRORLEVEL="
 
 :: NOTE: contains some peculiar statement ordering and redirections b/c of AppVeyor bugs when executing BAT/CMD scripts
 
-if DEFINED CI_SKIP ( echo INFO: perl install/config not done ^(CI_SKIP enabled^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
-if DEFINED OS_unsupported ( echo INFO: perl install/config not done ^(OS unsupported^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+if DEFINED CI_SKIP ( echo info: perl install/config not done ^(CI_SKIP enabled^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+if DEFINED OS_unsupported ( echo info: perl install/config not done ^(OS unsupported^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 if not defined perl_version ( set "perl_version=latest" )
 
