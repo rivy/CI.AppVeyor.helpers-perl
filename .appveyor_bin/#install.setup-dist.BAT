@@ -59,7 +59,7 @@ if /I "%DIST_TOOLING%"=="build" (
     set "_DIST_PREBUILDER=perl Makefile.PL"
   )
 call %_DIST_PREBUILDER% 2>&1 | findstr /b /i /r "OS unsupported\b" >NUL 2>&1 && set "OS_unsupported=OS unsupported" || set "OS_unsupported="
-if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
+REM if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 set "_DIST_PREBUILDER="
 
 if DEFINED OS_unsupported ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
