@@ -103,7 +103,7 @@ install:
   # force branch checkout (if knowable), then reset to the specific commit ## (needed for accurate code coverage info)
   # * this allows later apps to see the branch name using standard `git branch` operations, yet always builds the correct specific commit
   # * ref: <https://github.com/appveyor/ci/issues/1606>[`@`](https://archive.is/RVpnF)
-  - if DEFINED APPVEYOR_REPO_BRANCH if /I "%APPVEYOR_REPO_SCM%"=="git" ( git checkout "%APPVEYOR_REPO_BRANCH%" >NUL & git reset --hard "%APPVEYOR_REPO_COMMIT%" )
+  - if DEFINED APPVEYOR_REPO_BRANCH if /i "%APPVEYOR_REPO_SCM%"=="git" ( git checkout "%APPVEYOR_REPO_BRANCH%" >NUL & git reset --hard "%APPVEYOR_REPO_COMMIT%" )
   # install perl (strawberry variant) + version verification
   - ps: ; write-host $("[{0:HH:mm:ss}].install (perl)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   - ps: . "${env:CI_HELPERS}\#install.install-perl.PS1"

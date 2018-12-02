@@ -72,7 +72,7 @@ if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVE
 ::# check OS_unsupported
 :_check_OS_unsupported_
 echo [%TIME%] ### OS_unsupported ?
-if /I "%DIST_TOOLING%"=="build" (
+if /i "%DIST_TOOLING%"=="build" (
     set "_DIST_PREBUILDER=perl Build.PL"
   ) else (
     set "_DIST_PREBUILDER=perl Makefile.PL"
