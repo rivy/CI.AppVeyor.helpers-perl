@@ -1,6 +1,9 @@
 # highlight any non-default (ie, non-null) environment vars (from the set of configuration vars)
 # ref: http://www.powertheshell.com/input_psv3 @@ https://archive.is/D7z8m
 # ref: https://kevinmarquette.github.io/2016-11-06-powershell-hashtable-everything-you-wanted-to-know-about @@ https://archive.is/Ln6cg
+if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
+
+$exit_val = 0
 
 @($Input) | & {
 
@@ -41,3 +44,6 @@
   if ( $overrides ) { write-host -fore yellow $($(@("") + $overrides + @("")) -join "`r`n") }
 
 }
+
+set-PSdebug -off
+exit $exit_val
