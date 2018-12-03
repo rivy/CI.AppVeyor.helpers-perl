@@ -95,6 +95,7 @@ if ( $null -ne $env:CI_SKIP ) {
     if ( ($null -eq $install_complete) ) {
         write-host -nonewline "(${env:perl_version}; via Chocolatey [``cinst $cinst_options StrawberryPerl``]) ... "
         $out = & 'CMD' @( '/x/c', "choco config set cacheLocation `"$download_dir`" 2>&1 && cinst $cinst_options StrawberryPerl 2>&1" )
+        if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host $($out -join "`r`n") }
         if ($LASTEXITCODE -ne 0) {
             write-host ""
             write-host "WARN: ``cinst`` of StrawberryPerl failed [ERRORLEVEL=$LASTEXITCODE]" -f yellow
@@ -102,7 +103,6 @@ if ( $null -ne $env:CI_SKIP ) {
             $install_complete = "true.cinst"
             $env:PERL_DOWNLOAD_URI=""
         }
-        if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host $($out -join "`r`n") }
     }
 
     if ( $null -ne $env:CI_DEBUG_PERL_INSTALL ) { $install_complete = $null }
@@ -110,13 +110,13 @@ if ( $null -ne $env:CI_SKIP ) {
     if ( ($null -eq $install_complete) -and ($null -ne $perl_direct_URI) ) {
         write-host -nonewline "(${env:perl_version}; direct download from '$perl_direct_URI') ... "
         $out = & 'CMD' @( '/x/c', "curl -# -fL `"$perl_direct_URI`" -o `"$download_dir\perl-${env:perl_version}.zip`" 2>&1 && call 7z -bd -y x `"$download_dir\perl-${env:perl_version}.zip`" -oc:\strawberry 2>&1" )
+        if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host $($out -join "`r`n") }
         if ($LASTEXITCODE -ne 0) {
             write-host "" ; write-host "WARN: direct download Perl failed [ERRORLEVEL=$LASTEXITCODE]" -f yellow
         } else {
             $install_complete = "true.direct"
             $env:PERL_DOWNLOAD_URI = $perl_direct_URI
         }
-        if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host $($out -join "`r`n") }
     }
 
     if ( $null -ne $env:CI_DEBUG_PERL_INSTALL ) { $install_complete = $null }
@@ -124,13 +124,13 @@ if ( $null -ne $env:CI_SKIP ) {
     if ( ($null -eq $install_complete) -and ($null -ne $perl_mirror_URI) ) {
         write-host -nonewline "(${env:perl_version}; direct download from '$perl_mirror_URI') ... "
         $out = & 'CMD' @( '/x/c', "curl -# -fL `"$perl_mirror_URI`" -o `"$download_dir\perl-${env:perl_version}.zip`" 2>&1 && call 7z -bd -y x `"$download_dir\perl-${env:perl_version}.zip`" -oc:\strawberry 2>&1" )
+        if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host $($out -join "`r`n") }
         if ($LASTEXITCODE -ne 0) {
             write-host "" ; write-host "WARN: mirror download Perl failed [ERRORLEVEL=$LASTEXITCODE]" -f yellow
         } else {
             $install_complete = "true.mirror"
             $env:PERL_DOWNLOAD_URI = $perl_mirror_URI
         }
-        if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host $($out -join "`r`n") }
     }
 
     if ( $null -eq $install_complete ) {
