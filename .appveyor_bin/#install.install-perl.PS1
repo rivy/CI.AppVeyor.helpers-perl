@@ -13,7 +13,7 @@ write-host -nonewline "Configuring Perl ... "
 
 $env:PATH = "C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;${env:PATH}"
 
-$env:make = $(& "perl" @('-MConfig', '-e', '"print $Config{make}"') )
+$env:make = $(& 'CMD' @('/x/c', 'perl -MConfig -e "print $Config{make}" 2>NUL') )
 if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }
 
 write-host "done"
