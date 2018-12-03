@@ -27,7 +27,7 @@ $CI_vars = @(
     # 'OS_unsupported',
     # 'PERL5OPT',
     # 'TEST_FILES', 'TEST_METHOD'
-    @()
+    $null
     );
 $output=false
 $CI_vars |% { if ( $null -ne $_ ) { $val = $(get-item env:$_ -ea silent).value; if ( $null -ne $val ) { write-host "$_=$val"; $output=true } } }
@@ -55,7 +55,7 @@ $CI_vars = @(
     'OS_unsupported',
     'PERL5OPT',
     'TEST_FILES', 'TEST_METHOD',
-    @()
+    $null
     );
 $CI_vars |% { if ( $null -ne $_ ) { $val = $(get-item env:$_ -ea silent).value; write-host "$_=$val" } }
 
