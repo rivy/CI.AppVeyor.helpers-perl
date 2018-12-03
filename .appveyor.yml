@@ -15,6 +15,8 @@ skip_tags: true     ## do not build on tags
 
 matrix:
   allow_failures:
+    - AUTHOR_TESTING: 1
+    - TEST_SIGNATURE: 1
     - CI_HELPER_BRANCH: canary
     - Perl_VERSION: "5.8.8" ## allow perl v5.8.8 failures; (v5.8.8 is problematic for many projects)
 
@@ -22,6 +24,8 @@ environment:
   matrix:
     - Perl_VERSION: "latest"
       COVERAGE: "Codecov Coveralls" ## note: case sensitive!
+      AUTHOR_TESTING: 1
+      RELEASE_TESTING: 1
     - Perl_VERSION: "5.28"
     - Perl_VERSION: "5.26"
     - Perl_VERSION: "5.24"
@@ -35,9 +39,10 @@ environment:
     - Perl_VERSION: "5.8.8"
     - Perl_VERSION: "latest"
       CI_HELPER_BRANCH: "canary"
+      TEST_SIGNATURE: 1
   global:
     AUTOMATED_TESTING: 1
-    CI_CACHE_DIR: C:\cache
+    CI_CACHE_DIR: "C:\\cache"
     #
     # debug?
     # CI_DEBUG: 1               ##  [ "" == false, <non-empty> == true ]; "true" enables detailed output for the helper scripts
@@ -87,10 +92,11 @@ install:
   # find / download helpers
   - ps: ; write-host $("[{0:HH:mm:ss}].install (helpers)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   # * use "vendored" copy if present
-  - ps: if ( ! $env:CI_HELPERS -and (test-path ".appveyor_bin") ) { $env:CI_HELPERS=[IO.Path]::GetFullPath(".appveyor_bin") ; "[{0:HH:mm:ss}].install ... helpers ... (vendored)" -f $(get-date) }
-  # * clone/download helpers from repo if needed
-  - ps: if ( ! $env:CI_HELPERS ) { $repo_path = $( mkdir "${env:CI_TEMP_DIR}\helpers" ).Fullname ; $git_cmd = "git clone ${env:CI_HELPER_REPO} `"${repo_path}`" -b ${env:CI_HELPER_BRANCH} 2>&1" ; write-host "[``${git_cmd}``]" ; & 'CMD' @( '/c', $git_cmd ) ; $err = $LASTEXITCODE ; $env:CI_HELPERS = "${repo_path}\.appveyor_bin" ; if ($err -ne 0) { exit -1 } ; }
-  - ps: ; write-host $("[{0:HH:mm:ss}].install (helpers) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
+  - ps: if ( ! $env:CI_HELPERS -and (test-path ".appveyor_bin") ) { $env:CI_HELPERS=[IO.Path]::GetFullPath(".appveyor_bin") ; ${env:CI_HELPER_REPO} = ${env:APPVEYOR_REPO_NAME} ; ${env:CI_HELPER_BRANCH_DESC} = ${env:APPVEYOR_REPO_COMMIT} ; }
+  # * clone/download helpers from HELPER repo (via `git`) if needed
+  - ps: if ( ! $env:CI_HELPERS ) { $repo_path = $( mkdir "${env:CI_TEMP_DIR}\helpers" ).Fullname ; $git_cmd = "git clone ${env:CI_HELPER_REPO} `"${repo_path}`" -b ${env:CI_HELPER_BRANCH} 2>&1" ; write-host "[``${git_cmd}``]" ; & 'CMD' @( '/c', $git_cmd ) ; $err = $LASTEXITCODE ; $env:CI_HELPERS = "${repo_path}\.appveyor_bin" ; if ($err -ne 0) { exit $err } ; }
+  - ps: if ( ! $env:CI_HELPER_BRANCH_DESC ) { ${env:CI_HELPER_BRANCH_DESC} = $( pushd "${env:CI_HELPERS}" ; & 'git' @( 'describe', '--always' ) 2>&1 ; popd ) ; }
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (helpers) ... (${env:CI_HELPER_REPO}@${env:CI_HELPER_BRANCH_DESC})")
   # resolve requested coverage with needed configuration
   - ps: . "${env:CI_HELPERS}\#install.determine-coverage.PS1"
   ##
@@ -116,13 +122,13 @@ install:
   # setup testing method/options and test files
   - ps: . "${env:CI_HELPERS}\#install.setup-testing.PS1"
   # distribution prep prior to the build/make process (ie, build dependencies and OS_unsupported check)
-  - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements and recommendations)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   - ps: . "${env:CI_HELPERS}\#install.setup-dist.PS1"
-  - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (distribution requirements and recommendations) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   # coverage prep
-  - ps: ; write-host $("[{0:HH:mm:ss}].install (coverage)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (coverage requirements)" -f $($mark_sub = get-date; $mark_sub)) -f darkgray
   - ps: . "${env:CI_HELPERS}\#install.setup-coverage.PS1"
-  - ps: ; write-host $("[{0:HH:mm:ss}].install (coverage) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
+  - ps: ; write-host $("[{0:HH:mm:ss}].install (coverage requirements) ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark_sub).totalseconds)) -f gray
   #
   - ps: ; write-host $("[{0:HH:mm:ss}].install ... done ({1:0.0}s)" -f $(get-date; $($(get-date) - $mark).totalseconds)) -f green
 
