@@ -39,7 +39,7 @@ $exit_val = 0
   $overrides = @();
 
   #$CI_vars |% { $v = (get-item env:$_ -ea silent).value; if ($null -ne $v) { $overrides += "$_=$v" }}
-  $CI_vars |% { $v = $data[$_]; if ($null -ne $v) { $overrides += "$_=$v" }}
+  $CI_vars |% { $v = $data[$_]; if (($null -ne $_) -and ($null -ne $v)) { $overrides += "$_=$v" }}
 
   if ( $overrides ) { write-host -fore yellow $($(@("") + $overrides + @("")) -join "`r`n") }
 
