@@ -5,7 +5,7 @@ $exit_val = 0
 
 if ( $env:CI_HELPERS -eq $null ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
 
-if ( ( $env:CI_SKIP -ne $null ) -or ( $env:OS_unsupported -ne $null ) )  {
+if ( ( $env:CI_SKIP -eq $null ) -and ( $env:OS_unsupported -eq $null ) )  {
     if ( $env:DIST_TOOLING -ieq 'build' ) {
         write-host "[``perl Build.PL``]"
         & 'CMD' @( '/x/c', "perl Build.PL 2>&1" )

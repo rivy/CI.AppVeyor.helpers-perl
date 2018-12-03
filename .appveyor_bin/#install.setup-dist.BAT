@@ -75,12 +75,11 @@ if /i "%DIST_TOOLING%"=="build" (
   ) else (
     set "_DIST_PREBUILDER=perl Makefile.PL"
   )
-call %_DIST_PREBUILDER% 2>&1 | findstr /b /i /r "OS unsupported\b" >NUL 2>&1 && set "OS_unsupported=OS unsupported" || set "OS_unsupported="
-REM if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
-if /i "%DIST_TOOLING%"=="build" (
+call %_DIST_PREBUILDER% 2>&1 | call findstr /b /i /r "OS unsupported\b" >NUL 2>&1 && set "OS_unsupported=OS unsupported" || set "OS_unsupported="
 :: * cleanup Build.PL products to avoid possible later version mismatch with an updated Module::Build
+if /i "%DIST_TOOLING%"=="build" (
     call "perl" Build realclean 2>&1 >NUL
-    }
+    )
 set "_DIST_PREBUILDER="
 
 if DEFINED OS_unsupported ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )

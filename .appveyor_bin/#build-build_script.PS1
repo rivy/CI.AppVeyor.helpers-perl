@@ -9,7 +9,7 @@ if ( $env:CI_SKIP -ne $null ) {
     write-host "info: build not done (OS unsupported)"
 } else {
     if ( $env:DIST_TOOLING -ieq 'build' ) {
-        write-host "[``perl Build.PL``]"
+        write-host "[``perl Build``]"
         & 'CMD' @( '/x/c', "perl Build 2>&1" )
         if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }
     }
