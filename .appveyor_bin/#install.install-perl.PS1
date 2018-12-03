@@ -64,12 +64,12 @@ if ( $env:CI_SKIP -ne $null ) {
 
     ## determine direct download file (as needed and available [generally only for certain earlier perl versions])
     $direct_download_only = false
-    if ( $env:perl_version -ieq "5.8.8.4" ) { $direct_download_only=true }
-    if ( $env:perl_version -ieq "5.8.9.5" ) { $direct_download_only=true }
-    if ( $env:perl_version -ieq "5.10.1.2") { $direct_download_only=true }
-    if ( $env:perl_version -ieq "5.12.3.0") { $direct_download_only=true }
-    if ( $env:perl_version -ieq "5.14.4.1") { $direct_download_only=true }
-    if ( $env:perl_version -ieq "5.16.3.1") { $direct_download_only=true }
+    if ( $env:perl_version -ieq "5.8.8.4" ) { $direct_download_only = true }
+    if ( $env:perl_version -ieq "5.8.9.5" ) { $direct_download_only = true }
+    if ( $env:perl_version -ieq "5.10.1.2") { $direct_download_only = true }
+    if ( $env:perl_version -ieq "5.12.3.0") { $direct_download_only = true }
+    if ( $env:perl_version -ieq "5.14.4.1") { $direct_download_only = true }
+    if ( $env:perl_version -ieq "5.16.3.1") { $direct_download_only = true }
     # ... perl versions after this are available via `cinst`
 
     $perl_direct_URI = $direct_URI[ $env:perl_version ]
@@ -92,16 +92,16 @@ if ( $env:CI_SKIP -ne $null ) {
 
     $install_complete = $null
 
-    if ( ($install_complete -eq $null) -and -not $direct_download_only ) {
+    if ( ($install_complete -eq $null) ) {
         write-host -nonewline "(${env:perl_version}; via Chocolatey [``cinst $cinst_options StrawberryPerl``]) ... "
         $out = ""
-        $out = $out + $(& 'CMD' @( '/x/c', "choco config set cacheLocation `"$download_dir`" 2>&1" ))
-        $out = $out + $(& 'CMD' @( '/x/c', "cinst $cinst_options StrawberryPerl 2>&1" ))
+        $out = @($out, @( & 'CMD' @( '/x/c', "choco config set cacheLocation `"$download_dir`" 2>&1" ) ))
+        $out = @($out, @( & 'CMD' @( '/x/c', "cinst $cinst_options StrawberryPerl 2>&1" ) ))
         if ($LASTEXITCODE -ne 0) {
             write-host ""
             write-host "WARN: ``cinst`` of StrawberryPerl failed [ERRORLEVEL=$LASTEXITCODE]" -f yellow
-            write-host "[output] ..." -f darkblue
-            write-host $($out -join "`r`n") -f darkyellow
+            write-host "[output] ..." -f yellow
+            write-host $($out -join "`r`n")
         } else {
             $install_complete = "true.cinst"
             $env:PERL_DOWNLOAD_URI=""
