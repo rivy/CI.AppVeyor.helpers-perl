@@ -24,7 +24,7 @@ echo [%TIME%] ### install basic modules with "issues"
 ::#   - for perl versions > 5.24, the default make type was changed to `gmake` and ExtUtils::MakeMaker works without issue
 if /i NOT "%make%"=="gmake" ( set EUMM_version=ExtUtils::MakeMaker~">=6.98 <7.0" ) else ( set "EUMM_version=" )
 REM call perl -e "use version; use ExtUtils::MakeMaker; exit -1 if version->parse($ExtUtils::MakeMaker::VERSION) < version->parse(q{7.0});" >NUL 2>&1 || call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% ExtUtils::MakeMaker~"< 7.0" 2>&1
-call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied %EUMM_version% 2>&1
+if DEFINED EUMM_version call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied %EUMM_version% 2>&1
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 ::#   'version' ## (CORE module since perl v5.9)
 ::#   - updated version needed for many installs
