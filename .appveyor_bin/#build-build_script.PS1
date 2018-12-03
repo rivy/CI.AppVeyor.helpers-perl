@@ -1,11 +1,11 @@
 # build-build_script phase
-if ( $env:CI_DEBUG ) { set-PSdebug -trace 1 }
+if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
 
 $exit_val = 0
 
-if ( $env:CI_SKIP ) {
+if ( $env:CI_SKIP -ne $null ) {
     write-host "info: build not done (CI_SKIP enabled)"
-} elseif ( $env:OS_unsupported ) {
+} elseif ( $env:OS_unsupported -ne $null ) {
     write-host "info: build not done (OS unsupported)"
 } else {
     if ( $env:DIST_TOOLING -ieq 'build' ) {

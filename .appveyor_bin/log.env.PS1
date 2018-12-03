@@ -1,5 +1,5 @@
 # log relevant environment variables
-if ( $env:CI_DEBUG ) { set-PSdebug -trace 1 }
+if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
 
 $exit_val = 0
 
