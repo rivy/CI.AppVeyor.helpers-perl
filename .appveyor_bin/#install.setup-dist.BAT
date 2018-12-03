@@ -20,7 +20,9 @@ echo [%TIME%] ### install basic modules with "issues"
 ::#   'ExtUtils::MakeMaker' ## (CORE module)
 ::#   - for perl versions < 5.14, installing ExtUtils::MakeMaker >= 7.0 causes ... "The system cannot find the path specified.\ndmake.exe:  Error code 129, while making 'blib\lib\ExtUtils\.exists'"
 ::#   - for perl versions = 5.12, installing ExtUtils::MakeMaker >= 7.0 causes ... "Use of inherited AUTOLOAD for non-method Win32::GetConsoleCP() is deprecated at C:/strawberry/perl/site/lib/ExtUtils/MakeMaker/Locale.pm line 50."
-call perl -e "use version; use ExtUtils::MakeMaker; exit -1 if version->parse($ExtUtils::MakeMaker::VERSION) < version->parse(q{7.0});" >NUL 2>&1 || call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% ExtUtils::MakeMaker~"< 7.0" 2>&1
+set EUMM_version=ExtUtils::MakeMaker~"< 7.0"
+REM call perl -e "use version; use ExtUtils::MakeMaker; exit -1 if version->parse($ExtUtils::MakeMaker::VERSION) < version->parse(q{7.0});" >NUL 2>&1 || call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% ExtUtils::MakeMaker~"< 7.0" 2>&1
+call "%CI_HELPERS%\cpanm-mods_only.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied %EUMM_version% 2>&1
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 ::#   'version' ## (CORE module since perl v5.9)
 ::#   - updated version needed for many installs
@@ -62,8 +64,8 @@ popd
 ::# install baseline dependencies
 echo [%TIME%] ### install distribution dependencies
 pushd "%_faux_dir%" &:: use faux distribution
-echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps ExtUtils::MakeMaker~"< 7.0" . 2>&1`
-call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps ExtUtils::MakeMaker~"< 7.0" . 2>&1
+echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps %EUMM_version% . 2>&1`
+call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --installdeps %EUMM_version% . 2>&1
 popd
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 
@@ -89,7 +91,7 @@ if DEFINED DIST_SUPPRESS_RECS ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 ::# install any further optional dependencies
 echo [%TIME%] ### install recommended modules
 pushd "%_faux_dir%" &:: use faux distribution
-echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" . 2>&1`
-call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps ExtUtils::MakeMaker~"< 7.0" . 2>&1
+echo `call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps %EUMM_version% . 2>&1`
+call "%CI_HELPERS%\cpanm.BAT" --no-interactive --no-man-pages --notest %_CPAN_VERBOSITY% --skip-satisfied --with-recommends --installdeps %EUMM_version% . 2>&1
 popd
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
