@@ -62,18 +62,13 @@ if ( $null -ne $env:CI_SKIP ) {
     $mirror_URI['5.28.0.1'] = "https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.28.0.1-64bit-portable.zip"
     $mirror_URI['latest']   = $mirror_URI['5.28.0.1']
 
-    ## determine direct download file (as needed and available [generally only for certain earlier perl versions])
-    $direct_download_only = false
-    if ( $env:perl_version -ieq "5.8.8.4" ) { $direct_download_only = true }
-    if ( $env:perl_version -ieq "5.8.9.5" ) { $direct_download_only = true }
-    if ( $env:perl_version -ieq "5.10.1.2") { $direct_download_only = true }
-    if ( $env:perl_version -ieq "5.12.3.0") { $direct_download_only = true }
-    if ( $env:perl_version -ieq "5.14.4.1") { $direct_download_only = true }
-    if ( $env:perl_version -ieq "5.16.3.1") { $direct_download_only = true }
-    # ... perl versions after this are available via `cinst`
-
+    ## finalize source locations
     $perl_direct_URI = $direct_URI[ $env:perl_version ]
     $perl_mirror_URI = $mirror_URI[ $env:perl_version ]
+    # # * some early versions are not available via `cinst` (generally only for certain earlier Perl versions)
+    # $download_only = false
+    # if ( $env:perl_version -ieq "5.8.8.4" ) { $download_only = true }
+    # if ( $env:perl_version -ieq "5.10.1.2") { $download_only = true }
 
     ## setup download area (CI_CACHE_DIR availability is not assumed)
     $download_dir = $env:CI_CACHE_DIR
@@ -92,7 +87,11 @@ if ( $null -ne $env:CI_SKIP ) {
 
     $install_complete = $null
 
-    if ( ($null -eq $install_complete) ) {
+    if ( $null -ne $env:CI_DEBUG_PERL_INSTALL ) { $install_complete = $null }
+
+    # * `cinst` is generally about 30s slower to install than via a direct download (and usually ends up downloading the binary from StrawberryPerl.com)
+    # * ...> only attempt `cinst` for "latest" version (which may be more up-to-date) or when no direct URI is known
+    if ( ($null -eq $install_complete) -and (($env:perl_version -ieq "latest") -or ($null -eq $perl_direct_URI)) ) {
         write-host -nonewline "(${env:perl_version}; via Chocolatey [``cinst $cinst_options StrawberryPerl``]) ... "
         $out = & 'CMD' @( '/x/c', "choco config set cacheLocation `"$download_dir`" 2>&1 && cinst $cinst_options StrawberryPerl 2>&1" )
         if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host ""; write-host $($out -join "`r`n") }
@@ -107,7 +106,7 @@ if ( $null -ne $env:CI_SKIP ) {
     if ( $null -ne $env:CI_DEBUG_PERL_INSTALL ) { $install_complete = $null }
 
     if ( ($null -eq $install_complete) -and ($null -ne $perl_direct_URI) ) {
-        write-host -nonewline "(${env:perl_version}; direct download from '$perl_direct_URI') ... "
+        write-host -nonewline "(${env:perl_version}; from '$perl_direct_URI') ... "
         $out = & 'CMD' @( '/x/c', "curl -# -fL `"$perl_direct_URI`" -o `"$download_dir\perl-${env:perl_version}.zip`" 2>&1 && call 7z -bd -y x `"$download_dir\perl-${env:perl_version}.zip`" -oc:\strawberry 2>&1" )
         if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host ""; write-host $($out -join "`r`n") }
         if ($LASTEXITCODE -ne 0) {
@@ -121,7 +120,7 @@ if ( $null -ne $env:CI_SKIP ) {
     if ( $null -ne $env:CI_DEBUG_PERL_INSTALL ) { $install_complete = $null }
 
     if ( ($null -eq $install_complete) -and ($null -ne $perl_mirror_URI) ) {
-        write-host -nonewline "(${env:perl_version}; direct download from '$perl_mirror_URI') ... "
+        write-host -nonewline "(${env:perl_version}; from '$perl_mirror_URI') ... "
         $out = & 'CMD' @( '/x/c', "curl -# -fL `"$perl_mirror_URI`" -o `"$download_dir\perl-${env:perl_version}.zip`" 2>&1 && call 7z -bd -y x `"$download_dir\perl-${env:perl_version}.zip`" -oc:\strawberry 2>&1" )
         if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host ""; write-host $($out -join "`r`n") }
         if ($LASTEXITCODE -ne 0) {
