@@ -1,16 +1,16 @@
 # install ~ install Perl binary package
-if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
+if ( $null -ne $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 $exit_val = 0
 
-if ( $env:CI_HELPERS -eq $null ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
+if ( $null -eq $env:CI_HELPERS ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
 
-if ( $env:CI_SKIP -ne $null ) {
+if ( $null -ne $env:CI_SKIP ) {
     write-host "info: perl install/config not done (CI_SKIP enabled)"
-} elseif ( $env:OS_unsupported -ne $null ) {
+} elseif ( $null -ne $env:OS_unsupported ) {
     write-host "info: perl install/config not done (OS unsupported)"
 } else {
-    if ( $env:perl_version -eq $null ) { $env:perl_version = "latest" }
+    if ( $null -eq $env:perl_version ) { $env:perl_version = "latest" }
 
     ## refine "generic" perl versions
     if ( $env:perl_version -ieq "5.8.8" ) { $env:perl_version = "5.8.8.4" }
@@ -77,10 +77,10 @@ if ( $env:CI_SKIP -ne $null ) {
 
     ## setup download area (CI_CACHE_DIR availability is not assumed)
     $download_dir = $env:CI_CACHE_DIR
-    if ( $download_dir -eq $null ) { $download_dir = $env:CI_TEMP_DIR }
-    if ( $download_dir -eq $null ) { $download_dir = $env:TEMP }
-    if ( $download_dir -eq $null ) { $download_dir = $env:TMP }
-    if ( $download_dir -eq $null ) { $download_dir = "C:\." }
+    if ( $null -eq $download_dir ) { $download_dir = $env:CI_TEMP_DIR }
+    if ( $null -eq $download_dir ) { $download_dir = $env:TEMP }
+    if ( $null -eq $download_dir ) { $download_dir = $env:TMP }
+    if ( $null -eq $download_dir ) { $download_dir = "C:\." }
     $download_dir = "$download_dir\perl.download"
     if (-not $(get-item $download_dir -ea silent)) { new-item $download_dir -item directory | out-null }
 
@@ -92,7 +92,7 @@ if ( $env:CI_SKIP -ne $null ) {
 
     $install_complete = $null
 
-    if ( ($install_complete -eq $null) ) {
+    if ( ($null -eq $install_complete) ) {
         write-host -nonewline "(${env:perl_version}; via Chocolatey [``cinst $cinst_options StrawberryPerl``]) ... "
         $out = & 'CMD' @( '/x/c', "choco config set cacheLocation `"$download_dir`" 2>&1 && cinst $cinst_options StrawberryPerl 2>&1" )
         if ($LASTEXITCODE -ne 0) {
@@ -102,12 +102,12 @@ if ( $env:CI_SKIP -ne $null ) {
             $install_complete = "true.cinst"
             $env:PERL_DOWNLOAD_URI=""
         }
-        if (($LASTEXITCODE -ne 0) -or ($env:CI_DEBUG -ne $null)) { write-host $($out -join "`r`n") }
+        if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host $($out -join "`r`n") }
     }
 
-    if ( $env:CI_DEBUG_PERL_INSTALL -ne $null ) { $install_complete = $null }
+    if ( $null -ne $env:CI_DEBUG_PERL_INSTALL ) { $install_complete = $null }
 
-    if ( ($install_complete -eq $null) -and ($perl_direct_URI -ne $null) ) {
+    if ( ($null -eq $install_complete) -and ($null -ne $perl_direct_URI) ) {
         write-host -nonewline "(${env:perl_version}; direct download from '$perl_direct_URI') ... "
         $out = & 'CMD' @( '/x/c', "curl -# -fL `"$perl_direct_URI`" -o `"$download_dir\perl-${env:perl_version}.zip`" 2>&1 && call 7z -bd -y x `"$download_dir\perl-${env:perl_version}.zip`" -oc:\strawberry 2>&1" )
         if ($LASTEXITCODE -ne 0) {
@@ -116,12 +116,12 @@ if ( $env:CI_SKIP -ne $null ) {
             $install_complete = "true.direct"
             $env:PERL_DOWNLOAD_URI = $perl_direct_URI
         }
-        if (($LASTEXITCODE -ne 0) -or ($env:CI_DEBUG -ne $null)) { write-host $($out -join "`r`n") }
+        if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host $($out -join "`r`n") }
     }
 
-    if ( $env:CI_DEBUG_PERL_INSTALL -ne $null ) { $install_complete = $null }
+    if ( $null -ne $env:CI_DEBUG_PERL_INSTALL ) { $install_complete = $null }
 
-    if ( ($install_complete -eq $null) -and ($perl_mirror_URI -ne $null) ) {
+    if ( ($null -eq $install_complete) -and ($null -ne $perl_mirror_URI) ) {
         write-host -nonewline "(${env:perl_version}; direct download from '$perl_mirror_URI') ... "
         $out = & 'CMD' @( '/x/c', "curl -# -fL `"$perl_mirror_URI`" -o `"$download_dir\perl-${env:perl_version}.zip`" 2>&1 && call 7z -bd -y x `"$download_dir\perl-${env:perl_version}.zip`" -oc:\strawberry 2>&1" )
         if ($LASTEXITCODE -ne 0) {
@@ -130,10 +130,10 @@ if ( $env:CI_SKIP -ne $null ) {
             $install_complete = "true.mirror"
             $env:PERL_DOWNLOAD_URI = $perl_mirror_URI
         }
-        if (($LASTEXITCODE -ne 0) -or ($env:CI_DEBUG -ne $null)) { write-host $($out -join "`r`n") }
+        if (($LASTEXITCODE -ne 0) -or ($null -ne $env:CI_DEBUG)) { write-host $($out -join "`r`n") }
     }
 
-    if ( $install_complete -eq $null ) {
+    if ( $null -eq $install_complete ) {
         write-host "ERR!: installation of Perl FAILED" -f red
         $exit_val = 1
     } else {

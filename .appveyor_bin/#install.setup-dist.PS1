@@ -1,9 +1,9 @@
 # install ~ setup distribution (dependencies, ...)
-if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
+if ( $null -ne $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 $exit_val = 0
 
-if ( $env:CI_HELPERS -eq $null ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
+if ( $null -eq $env:CI_HELPERS ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
 
 & "${env:CI_HELPERS}\#install.setup-dist.BAT"
 if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }

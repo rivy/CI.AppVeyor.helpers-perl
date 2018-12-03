@@ -1,11 +1,11 @@
 # install ~ install any needed code coverage dependencies
-if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
+if ( $null -ne $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 $exit_val = 0
 
-if ( $env:CI_HELPERS -eq $null ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
+if ( $null -eq $env:CI_HELPERS ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
 
-if ( ($env:CI_SKIP -eq $null) -and ($env:OS_unsupported -eq $null) -and ($env:COVERAGE -ne $null) ) {
+if ( ($null -eq $env:CI_SKIP) -and ($null -eq $env:OS_unsupported) -and ($null -ne $env:COVERAGE) ) {
     # install coverage support
     & "${env:CI_HELPERS}\cpanm-mods_only.BAT" @( '--no-interactive', '--no-man-pages', '--notest', '--quiet', '--skip-satisfied', 'Devel::Cover' )
     if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }

@@ -1,9 +1,9 @@
 # assess code coverage (request and support)
-if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
+if ( $null -ne $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 $exit_val = 0
 
-if ( $env:COVERAGE -ne $null ) {
+if ( $null -ne $env:COVERAGE ) {
     # determine coverage support (signaled by <COVERAGE_TYPE>_TOKEN environment vars)
     $s = $env:COVERAGE
     $coverage = @()

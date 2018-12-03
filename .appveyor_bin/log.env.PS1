@@ -1,5 +1,5 @@
 # log relevant environment variables
-if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
+if ( $null -ne $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 $exit_val = 0
 
@@ -30,7 +30,7 @@ $CI_vars = @(
     @()
     );
 $output=false
-$CI_vars |% { if ( $_ -ne $null ) { $val = $(get-item env:$_ -ea silent).value; if ( $val -ne $null ) { write-host "$_=$val"; $output=true } } }
+$CI_vars |% { if ( $null -ne $_ ) { $val = $(get-item env:$_ -ea silent).value; if ( $null -ne $val ) { write-host "$_=$val"; $output=true } } }
 if ( $output ) { write-host "." }
 
 $CI_vars = @(
@@ -57,7 +57,7 @@ $CI_vars = @(
     'TEST_FILES', 'TEST_METHOD',
     @()
     );
-$CI_vars |% { if ( $_ -ne $null ) { $val = $(get-item env:$_ -ea silent).value; write-host "$_=$val" } }
+$CI_vars |% { if ( $null -ne $_ ) { $val = $(get-item env:$_ -ea silent).value; write-host "$_=$val" } }
 
 write-host ""
 
