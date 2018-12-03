@@ -1,13 +1,13 @@
 # install ~ setup TEST_METHOD and TEST_FILES
-if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
+if ( $null -ne $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 $exit_val = 0
 
-if (($env:TEST_METHOD -eq $null) -and ($env:DIST_TOOLING -ieq "build")) { $env:TEST_METHOD = "perl Build test" }
-if (($env:TEST_METHOD -eq $null) -and ($env:DIST_TOOLING -ieq "make")) { $env:TEST_METHOD = "${env:make} test" }
-if ($env:TEST_METHOD -eq $null) {
+if (($null -eq $env:TEST_METHOD) -and ($env:DIST_TOOLING -ieq "build")) { $env:TEST_METHOD = "perl Build test" }
+if (($null -eq $env:TEST_METHOD) -and ($env:DIST_TOOLING -ieq "make")) { $env:TEST_METHOD = "${env:make} test" }
+if ($null -eq $env:TEST_METHOD) {
     $env:TEST_METHOD = "prove -bl"
-    if ($env:TEST_FILES -eq $null) {
+    if ($null -eq $env:TEST_FILES) {
         $files = @()
         if ((get-item 't' -ea ignore) -is [IO.DirectoryInfo]) { $files += 't' }
         if ( $env:AUTHOR_TESTING -or $env:RELEASE_TESTING ) {

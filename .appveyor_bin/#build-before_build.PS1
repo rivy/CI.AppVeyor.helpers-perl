@@ -1,11 +1,11 @@
 # build-before_build phase
-if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
+if ( $null -ne $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 $exit_val = 0
 
-if ( $env:CI_HELPERS -eq $null ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
+if ( $null -eq $env:CI_HELPERS ) { $env:CI_HELPERS = [IO.Path]::GetFullPath(".") }
 
-if ( ( $env:CI_SKIP -ne $null ) -or ( $env:OS_unsupported -ne $null ) )  {
+if ( ( $null -eq $env:CI_SKIP ) -and ( $null -eq $env:OS_unsupported ) )  {
     if ( $env:DIST_TOOLING -ieq 'build' ) {
         write-host "[``perl Build.PL``]"
         & 'CMD' @( '/x/c', "perl Build.PL 2>&1" )

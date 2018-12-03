@@ -1,15 +1,15 @@
 # build-build_script phase
-if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
+if ( $null -ne $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 $exit_val = 0
 
-if ( $env:CI_SKIP -ne $null ) {
+if ( $null -ne $env:CI_SKIP ) {
     write-host "info: build not done (CI_SKIP enabled)"
-} elseif ( $env:OS_unsupported -ne $null ) {
+} elseif ( $null -ne $env:OS_unsupported ) {
     write-host "info: build not done (OS unsupported)"
 } else {
     if ( $env:DIST_TOOLING -ieq 'build' ) {
-        write-host "[``perl Build.PL``]"
+        write-host "[``perl Build``]"
         & 'CMD' @( '/x/c', "perl Build 2>&1" )
         if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }
     }

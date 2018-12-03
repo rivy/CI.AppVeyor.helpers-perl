@@ -1,7 +1,7 @@
 # highlight any non-default (ie, non-null) environment vars (from the set of configuration vars)
 # ref: http://www.powertheshell.com/input_psv3 @@ https://archive.is/D7z8m
 # ref: https://kevinmarquette.github.io/2016-11-06-powershell-hashtable-everything-you-wanted-to-know-about @@ https://archive.is/Ln6cg
-if ( $env:CI_DEBUG -ne $null ) { set-PSdebug -trace 1 }
+if ( $null -ne $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 $exit_val = 0
 
@@ -33,13 +33,14 @@ $exit_val = 0
     'OS_unsupported',
     'PERL5OPT',
     'TEST_FILES', 'TEST_METHOD',
-    @()
+    $null
     );
 
   $overrides = @();
 
-  #$CI_vars |% { $v = (get-item env:$_ -ea silent).value; if ($v -ne $null) { $overrides += "$_=$v" }}
-  $CI_vars |% { $v = $data[$_]; if ($v -ne $null) { $overrides += "$_=$v" }}
+  #$CI_vars |% { $v = (get-item env:$_ -ea silent).value; if ($null -ne $v) { $overrides += "$_=$v" }}
+  #$CI_vars |% { $v = $data[$_]; if (($null -ne $_) -and ($null -ne $v)) { $overrides += "$_=$v" }}
+  $CI_vars |% { if ($null -ne $_) { $v = $data[$_]; if ($null -ne $v) { $overrides += "$_=$v" } } }
 
   if ( $overrides ) { write-host -fore yellow $($(@("") + $overrides + @("")) -join "`r`n") }
 
