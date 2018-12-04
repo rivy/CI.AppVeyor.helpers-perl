@@ -1,4 +1,4 @@
-# check code coverage
+# assess code coverage (request and support)
 if ( $env:CI_DEBUG ) { set-PSdebug -trace 1 }
 
 if ($env:COVERAGE) {
