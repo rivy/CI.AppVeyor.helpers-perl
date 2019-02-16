@@ -33,11 +33,13 @@ This repository contains a complete [AppVeyor CI](https://appveyor.com) configur
 
 If either *Build.PL* or *Makefile.PL* is present in the distribution main directory, the module will be automatically built prior to testing, using the standard Perl build or make idiom. Testing will then be done with the respective usual idiom (either `perl Build test` or `%make% test`), with `prove` as a fallback for distributions without the traditional build tooling (eg, many `dzil` packages).
 
-Distributions which lack both *Build.PL* and *Makefile.PL*, but which can be tested without needing non-CORE dependencies, should work "out-of-the-box", using the `prove` fallback method. If additional non-CORE dependencies are needed, the DIST_EXTRA_DEPS configuration variable (see below) can be used to install any required modules prior to `prove` testing.
+Distributions which lack both *Build.PL* and *Makefile.PL*, but which can be tested without needing non-CORE dependencies, should work "out-of-the-box", using the `prove` fallback method. If additional non-CORE dependencies are needed, a "cpanfile" or the DIST_EXTRA_DEPS configuration variable (see below) can be used to install any required modules prior to `prove` testing.
 
 Alternate build and test methods are also possible via the use of configuration variables (detailed below).
 
-Notably, there is no direct support for `dzil` building and testing. Support may be added in the future, but the current `dzil` module ecosystem (as of 2018-11) has many dependencies which won't cleanly install on MSWin32 environments. Until better MSWin32 support is available for direct `dzil` building and testing, `prove` fallback testing combined with the use of DIST_EXTRA_DEPS (for testing dependencies) can be a workable solution. Alternatively, the "Dist::Zilla::Plugin::MakeMaker" module could be used by authors to generate an ExtUtils::MakeMaker-compatible distribution for storage in its repository.
+Notably, there is no direct support for `dzil` building and testing. Support may be added in the future, but the current `dzil` module ecosystem (as of 2018-11) has many dependencies which won't install on MSWin32 environments. Until better MSWin32 support is available for direct `dzil` building and testing, `prove` fallback testing combined with the use of "cpanfile"/DIST_EXTRA_DEPS (for testing dependencies) can be a workable solution. Alternatively, the "Dist::Zilla::Plugin::MakeMaker" module could be used by authors to generate an ExtUtils::MakeMaker-compatible distribution.
+
+If either a "cpanfile" or generated "Makefile.PL" (via "Dist:Zilla:Plugin::MakeMaker") is used, it must be stored in the distribution repository.
 
 ### *.appveyor_init.{BAT,PS1}* (optional)
 
@@ -143,6 +145,14 @@ TEST_AUTHOR     | enable "author" tests; <br> [ "" == `false`, non-empty == `tru
 TEST_RELEASE    | enable "release" tests; <br> [ "" == `false`, non-empty == `true` ]
 
 The listed variables are not in the "API" per se but are commonly used in testing by most Perl distributions. The table lists these configuration variables and their usual respective definition / action. But notably the true effects of these variables will be defined by the user's testing design and usually only matters to the author. If defined, these variables will be listed in the build log.
+
+### Environmental overrides of configuration
+
+Initial values of configuration variables are taken from the *.appveyor.yml* file. However, all the configuration variables (including utility and common user configuration) may be overridden by AppVeyor environment variables and/or by using *.appveyor_init.{BAT,PS1}*.
+
+Adding an environment variable to the "Settings / Environment / Environment variables" section will override the configuration variable of the same name from the *.appveyor.yml* file.
+
+In turn, code executed by the *.appveyor_init.{BAT,PS1}* file(s) may override both *.appveyor.yml* and any AppVeyor environment variable settings.
 
 ### Code coverage
 
