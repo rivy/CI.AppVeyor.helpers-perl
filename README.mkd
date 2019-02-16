@@ -136,6 +136,10 @@ TEST_RELEASE    | enable "release" tests; <br> [ "" == `false`, non-empty == `tr
 
 The listed variables are not in the "API" per se but are commonly used in testing by most Perl distributions. The table lists these configuration variables and their usual respective definition / action. But notably the true effects of these variables will be defined by the user's testing design and usually only matters to the author. If defined, these variables will be listed in the build log.
 
+### AppVeyor Environment Overrides
+
+All the configuration variables (including utility and common user configuration) can be overridden by using the AppVeyor ...
+
 ### Code coverage
 
 Code coverage can be enabled by adding the `CODECOV_TOKEN` and/or `COVERALLS_TOKEN` to the environment variables of the AppVeyor project, on the AppVeyor site. These tokens are obtained from their respective sites.
