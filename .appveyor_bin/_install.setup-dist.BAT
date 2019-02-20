@@ -10,7 +10,7 @@ if DEFINED CI_SKIP ( echo info: build not done ^(CI_SKIP enabled^) & goto _undef
 if DEFINED OS_unsupported ( echo info: setup not done ^(OS unsupported^) & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 if DEFINED DIST_SUPPRESS_DEPS if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo info: skipping dependency discovery/installation [DIST_SUPPRESS_DEPS=%DIST_SUPPRESS_DEPS%] & goto :_check_OS_unsupported_ )
-if NOT DEFINED DIST_TOOLING if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS ( echo info: skipping dependency discovery/installation for non-build/make distribution & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+if NOT DEFINED DIST_TOOLING if NOT DEFINED COVERAGE if NOT DEFINED DIST_EXTRA_DEPS if NOT EXIST "cpanfile" ( echo info: skipping dependency discovery/installation for non-build/make/cpanfile distribution & goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 
 if DEFINED DIST_SUPPRESS_DEPS if DEFINED COVERAGE ( echo info: dependency suppression disabled for coverage [COVERAGE=%COVERAGE%] )
 if DEFINED DIST_SUPPRESS_DEPS if DEFINED DIST_EXTRA_DEPS ( echo info: dependency suppression disabled for extra dependencies [DIST_EXTRA_DEPS=%DIST_EXTRA_DEPS%] )
@@ -49,8 +49,10 @@ if DEFINED DIST_EXTRA_DEPS (
     )
 if NOT "%ERRORLEVEL%"=="0" ( goto _undefined_ 2>NUL || CMD /d /c exit %ERRORLEVEL% )
 
-if NOT DEFINED DIST_TOOLING ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
+if NOT DEFINED DIST_TOOLING if NOT EXIST "cpanfile" ( goto _undefined_ 2>NUL || CMD /d /c exit 0 )
 if DEFINED DIST_SUPPRESS_DEPS ( goto :_check_OS_unsupported_ )
+
+if NOT DEFINED DIST_TOOLING ( set "_CPAN_VERBOSITY=" ) &:: # "normal" verbosity for "cpanfile" dependency installation
 
 ::
 ::# install baseline dependencies
