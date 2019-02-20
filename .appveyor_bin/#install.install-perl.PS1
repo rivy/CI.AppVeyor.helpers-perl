@@ -40,7 +40,7 @@ if ( $null -ne $env:CI_SKIP ) {
     $direct_URI['5.18.4.1'] = "http://strawberryperl.com/download/5.18.4.1/strawberry-perl-5.18.4.1-64bit-portable.zip"
     $direct_URI['5.20.3.3'] = "http://strawberryperl.com/download/5.20.3.3/strawberry-perl-5.20.3.3-64bit-portable.zip"
     $direct_URI['5.22.3.1'] = "http://strawberryperl.com/download/5.22.3.1/strawberry-perl-5.22.3.1-64bit-portable.zip"
-    $direct_URI['5.24.4.1'] = "http://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.1.1-64bit-portable.zip"
+    $direct_URI['5.24.4.1'] = "http://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.4.1-64bit-portable.zip"
     $direct_URI['5.26.2.1'] = "http://strawberryperl.com/download/5.26.2.1/strawberry-perl-5.26.2.1-64bit-portable.zip"
     $direct_URI['5.28.0.1'] = "http://strawberryperl.com/download/5.28.0.1/strawberry-perl-5.28.0.1-64bit-portable.zip"
     $direct_URI['latest']   = $direct_URI['5.28.0.1']
