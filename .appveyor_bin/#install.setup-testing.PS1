@@ -6,7 +6,8 @@ $exit_val = 0
 if (($null -eq $env:TEST_METHOD) -and ($env:DIST_TOOLING -ieq "build")) { $env:TEST_METHOD = "perl Build test" }
 if (($null -eq $env:TEST_METHOD) -and ($env:DIST_TOOLING -ieq "make")) { $env:TEST_METHOD = "${env:make} test" }
 if ($null -eq $env:TEST_METHOD) {
-    $env:TEST_METHOD = "prove -bl"
+    # use `perl -S prove -bl` instead of `prove -bl`; increases robustness by avoiding buggy pl2bat in some perl versions (specifically, Perl v5.12)
+    $env:TEST_METHOD = "perl -S prove -bl"
     if ($null -eq $env:TEST_FILES) {
         $files = @()
         if ((get-item 't' -ea ignore) -is [IO.DirectoryInfo]) { $files += 't' }
