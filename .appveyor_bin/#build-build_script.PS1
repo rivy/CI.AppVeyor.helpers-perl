@@ -8,12 +8,12 @@ if ( $null -ne $env:CI_SKIP ) {
 } elseif ( $null -ne $env:OS_unsupported ) {
     write-host "info: build not done (OS unsupported)"
 } else {
-    if ( $env:DIST_TOOLING -ieq 'build' ) {
+    if ( "${env:DIST_TOOLING}".trim() -ieq 'build' ) {
         write-host "[``perl Build``]"
         & 'CMD' @( '/x/c', "perl Build 2>&1" )
         if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }
     }
-    if ( $env:DIST_TOOLING -ieq 'make ' ) {
+    if ( "${env:DIST_TOOLING}".trim() -ieq 'make' ) {
         write-host "[``${env:make}``]"
         & 'CMD' @( '/x/c', "${env:make} 2>&1" )
         if ( $LASTEXITCODE -ne 0 ) { $exit_val = $LASTEXITCODE }
