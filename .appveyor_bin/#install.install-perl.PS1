@@ -25,7 +25,8 @@ if ( $null -ne $env:CI_SKIP ) {
     if ( $env:perl_version -ieq "5.22" )  { $env:perl_version = "5.22.3.1" }
     if ( $env:perl_version -ieq "5.24" )  { $env:perl_version = "5.24.4.1" }
     if ( $env:perl_version -ieq "5.26" )  { $env:perl_version = "5.26.2.1" }
-    if ( $env:perl_version -ieq "5.28" )  { $env:perl_version = "5.28.0.1" }
+    if ( $env:perl_version -ieq "5.28" )  { $env:perl_version = "5.28.2.1" }
+    if ( $env:perl_version -ieq "5.30" )  { $env:perl_version = "5.30.0.1" }
 
     ## "known" perl binaries
     # * StrawberryPerl direct download URIs
@@ -43,7 +44,9 @@ if ( $null -ne $env:CI_SKIP ) {
     $direct_URI['5.24.4.1'] = "http://strawberryperl.com/download/5.24.4.1/strawberry-perl-5.24.4.1-64bit-portable.zip"
     $direct_URI['5.26.2.1'] = "http://strawberryperl.com/download/5.26.2.1/strawberry-perl-5.26.2.1-64bit-portable.zip"
     $direct_URI['5.28.0.1'] = "http://strawberryperl.com/download/5.28.0.1/strawberry-perl-5.28.0.1-64bit-portable.zip"
-    $direct_URI['latest']   = $direct_URI['5.28.0.1']
+    $direct_URI['5.28.2.1'] = "http://strawberryperl.com/download/5.28.2.1/strawberry-perl-5.28.2.1-64bit-portable.zip"
+    $direct_URI['5.30.0.1'] = "http://strawberryperl.com/download/5.30.0.1/strawberry-perl-5.30.0.1-64bit-portable.zip"
+    $direct_URI['latest']   = $direct_URI['5.30.0.1']
 
     # * StrawberryPerl mirror download URIs
     $mirror_URI = @{}
@@ -60,7 +63,9 @@ if ( $null -ne $env:CI_SKIP ) {
     $mirror_URI['5.24.4.1'] = "https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.24.4.1-64bit-portable.zip"
     $mirror_URI['5.26.2.1'] = "https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.26.2.1-64bit-portable.zip"
     $mirror_URI['5.28.0.1'] = "https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2018.0/strawberry-perl-5.28.0.1-64bit-portable.zip"
-    $mirror_URI['latest']   = $mirror_URI['5.28.0.1']
+    $mirror_URI['5.28.2.1'] = "https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2019.0/strawberry-perl-5.28.2.1-64bit-portable.zip"
+    $mirror_URI['5.30.0.1'] = "https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2019.0/strawberry-perl-5.30.0.1-64bit-portable.zip"
+    $mirror_URI['latest']   = $mirror_URI['5.30.0.1']
 
     ## finalize source locations
     $perl_direct_URI = $direct_URI[ $env:perl_version ]
