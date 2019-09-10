@@ -67,7 +67,7 @@ if ( $null -ne $env:CI_SKIP ) {
     $mirror_URI['5.30.0.1'] = "https://github.com/rivy/CI.AppVeyor.helpers-perl-binaries/releases/download/1.2019.0/strawberry-perl-5.30.0.1-64bit-portable.zip"
     $mirror_URI['latest']   = $mirror_URI['5.30.0.1']
 
-    ## finalize source locations
+    ## finalize source locations (may be $null)
     $perl_direct_URI = $direct_URI[ $env:perl_version ]
     $perl_mirror_URI = $mirror_URI[ $env:perl_version ]
     # # * some early versions are not available via `cinst` (generally only for certain earlier Perl versions)
