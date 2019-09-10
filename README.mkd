@@ -168,4 +168,4 @@ This repository can be "vendored" into a distribution by including both the [*.a
 
 Copyright 2017-2019 by Roy Ivy III. All rights reserved.
 
-Licensed under the MIT License (a copy may be obtained from <https://opensource.org/licenses/mit>).
+Licensed under the MIT License ([*LICENSE*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/LICENSE); for reference, see <https://opensource.org/licenses/mit>).
