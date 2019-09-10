@@ -1,5 +1,10 @@
-<DOCTYPE markdown>
+<!DOCTYPE markdown><!-- markdownlint-disable no-inline-html -->
 <meta charset="utf-8" content="text/markdown" lang="en">
+<!-- -## editors ## (emacs/sublime) -*- coding: utf8-nix; tab-width: 2; mode: markdown; indent-tabs-mode: nil; basic-offset: 2; st-word_wrap: 'true' -*- ## (jEdit) :tabSize=2:indentSize=2:mode=markdown: ## (notepad++) vim:tabstop=2:syntax=markdown:expandtab:smarttab:softtabstop=2 ## modeline (see <https://archive.is/djTUD>@@<http://webcitation.org/66W3EhCAP> ) -->
+<!-- spell-checker:ignore expandtab markdownlint modeline smarttab softtabstop -->
+
+<!-- spell-checker:ignore (Perl) cpanfile cpanm dzil Zilla -->
+<!-- spell-checker:ignore CODECOV devel vendored vendoring -->
 
 # AppVeyor CI Helpers for Perl
 
@@ -10,12 +15,15 @@ This repository contains a complete [AppVeyor CI](https://appveyor.com) configur
 1. Add the single supplied [*.appveyor.yml*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/.appveyor.yml) file to the Perl distribution being tested.
 2. Create an AppVeyor project which observes the Perl distribution's repository.
 
-> ###### Optional extra steps
+<!-- markdownlint-capture -->
+<!-- markdownlint-disable heading-increment -->
+> #### Optional extra steps
 >
 > 1. Enable "Skip branches without appveyor.yml" (located within the "General" section of the AppVeyor project settings).
 > 2. Enable code coverage reports ...
 >    1. Create a project or projects on [CodeCov](https://codecov.io) and/or [Coveralls](https://coveralls.io) which observes the distribution repository.
 >    2. Copy the API token value obtained from the observer project(s) into their respective environment variables (`CODECOV_TOKEN` and/or `COVERALLS_TOKEN`) within the AppVeyor project. These environment variables are set within the "Environment" section of the AppVeyor project settings. Note that the API token values are secrets. They should not be placed in the *.appveyor.yml* config file or committed to the repo, in any way. And they should be encrypted within the AppVeyor project settings tab (by clicking the lock icon next to each value).
+<!-- markdownlint-restore -->
 
 ## The Details
 
@@ -106,7 +114,7 @@ These variables have intelligent defaults and can, in general, be left alone as 
 
 `CI_HELPER_BRANCH` can be used to select between frequent helper updates (eg, "canary"), more stable code (eg, "stable" [the default]), or invariant (using a release TAG). Generally, from most to least stable ... [ "vendoring" (see below) > TAG > stable > canary > BRANCH ]. By definition, code updates and changes to the helper scripts are applied in the inverse order of "stability".
 
-`Perl_VERSION` is obviously used to select between various perl versions for testing. Shorthand, "generic" versions can be used (eg, `5.8`, `5.16`, ...) and, for versions in the "known" set, will be expanded to an appropriate full version. Current "generic" and "known" versions can be seen in the [*#install.install-perl.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/.appveyor_bin/%23install.install-perl.PS1) script (located in the [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin) directory). Additionally, these "known" versions are available via mirror and will be downloaded automatically whenever the main StrawberryPerl source site is unavailable (see [strawberryperl.com/issues#16](https://github.com/StrawberryPerl/strawberryperl.com/issues/16), [strawberryperl.com/issues#10](https://github.com/StrawberryPerl/strawberryperl.com/issues/10)).
+`Perl_VERSION` is obviously used to select between various perl versions for testing. Shorthand, "generic" versions can be used (eg, `5.8`, `5.16`, ...) and, for versions in the "known" set, will be expanded to an appropriate full version. Current "generic" and "known" versions can be seen in the [*#install.install-perl.PS1*](https://github.com/rivy/CI.AppVeyor.helpers-perl/blob/stable.APIv1/.appveyor_bin/%23install.install-perl.PS1) script (located in the [*.appveyor_bin*](https://github.com/rivy/CI.AppVeyor.helpers-perl/tree/stable.APIv1/.appveyor_bin) directory). Additionally, these "known" versions are available via mirror and will be downloaded automatically whenever the main StrawberryPerl source site is unavailable (see [StrawberryPerl.com/issues#16](https://github.com/StrawberryPerl/strawberryperl.com/issues/16), [StrawberryPerl.com/issues#10](https://github.com/StrawberryPerl/strawberryperl.com/issues/10)).
 
 ###### utility variables
 
